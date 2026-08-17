@@ -434,6 +434,10 @@ class Shop(ShopBase):
                 self.process_purchase(self.general_shop_priority, True, True)
             except ShiftyShopReplaced:
                 logger.warning('General shop replaced by shifty shop')
+            # Kamdzy - catch NotEnoughMoneyError locally so it doesn't uncaught-abort the whole Shop task
+            except NotEnoughMoneyError:
+                logger.error('The rest of money is not enough to buy this product')
+                self.ensure_back(GENERAL_SHOP_CHECK)
         try:
             if self.config.ArenaShop_enable:
                 self._auto_fill_arena_code_manual_priority()
