@@ -73,7 +73,12 @@ class SemiCombat(UI, DaemonBase):
                 continue
 
             # 下一关卡
-            if click_timer.reached() and self.appear_then_click(NEXT_STAGE, offset=(100, 30), interval=2):
+            # Kamdzy - skip in main-story mode: en-US NEXT_STAGE template misfires across map/loading/battle
+            if (
+                not self.config.SemiCombat_MainStoryMark
+                and click_timer.reached()
+                and self.appear_then_click(NEXT_STAGE, offset=(100, 30), interval=2)
+            ):
                 click_timer.reset()
                 continue
 
