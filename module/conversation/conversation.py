@@ -159,6 +159,9 @@ class Conversation(UI):
                         self.device.click_minitouch(380, 450)
                     # TODO
                     self.device.sleep(2)
+            # Kamdzy - don't let the broad catch swallow NoOpportunitiesRemain / other control-flow exceptions
+            except (NoOpportunitiesRemain, ConversationFavouriteDone, ChooseNextNIKKETooLong):
+                raise
             except Exception:
                 pass
 
