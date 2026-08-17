@@ -138,7 +138,11 @@ class Daily(UI):
                 self.ensure_back()
                 return
 
-    def get_next_target(self, skip_first_screenshot=True):
+    def get_next_target(self, skip_first_screenshot=True, _attempts=0):
+        # Kamdzy - bail out of recursive self-call to avoid RecursionError when en-US templates miss
+        if _attempts > 30:
+            logger.warning('get_next_target: gave up after 30 attempts')
+            return
         # 是否进入到某个角色
         if DETAIL_CHECK.match(self.device.image, threshold=0.71) and GIFT.match_appear_on(
             self.device.image, threshold=10
@@ -185,7 +189,7 @@ class Daily(UI):
                 pass
 
         self.device.screenshot()
-        self.get_next_target()
+        self.get_next_target(_attempts=_attempts + 1)
 
     def sending(self, skip_first_screenshot=True):
         logger.info('Sending......')
@@ -197,6 +201,13 @@ class Daily(UI):
                 skip_first_screenshot = False
             else:
                 self.device.screenshot()
+
+            # Kamdzy - Nikke has no gift items available; close dialog and skip
+            if not send_done and self.appear(NO_GIFT_ITEMS, offset=(10, 10)):
+                logger.info('No gift items available for this Nikke, skipping')
+                self.device.click_minitouch(655, 180)
+                self.device.sleep(1)
+                return
 
             # 升级
             if click_timer.reached() and self.appear_then_click(
