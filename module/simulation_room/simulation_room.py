@@ -416,13 +416,14 @@ class SimulationRoom(UI):
                     confirm_timer.reset()
                     click_timer.reset()
                     continue
-            else:
-                if click_timer.reached() and self.appear_then_click(
-                    START_SIMULATION_CONFIRM, offset=(5, 5), static=False
-                ):
-                    confirm_timer.reset()
-                    click_timer.reset()
-                    continue
+
+            # Kamdzy - always try Begin Simulation as fallback (fires when Quick is greyed/locked)
+            if click_timer.reached() and self.appear_then_click(
+                START_SIMULATION_CONFIRM, offset=(5, 5), static=False
+            ):
+                confirm_timer.reset()
+                click_timer.reset()
+                continue
 
             if self.appear(END_SIMULATION, offset=(30, 30), static=False):
                 break
