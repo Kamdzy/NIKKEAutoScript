@@ -101,6 +101,9 @@ class Interception(UI):
 
     def _run(self, skip_first_screenshot=True):
         boss = self.get_current_boss()
+        # Kamdzy - en-US lands on the Interception overview (LEVEL D/S/EX cards) instead of a boss screen.
+        # Track how long we've spent unable to find a boss so we tap the leftmost LEVEL card to navigate in.
+        enter_level_timer = Timer(3, count=3).start()
         while 1:
             if skip_first_screenshot:
                 skip_first_screenshot = False
@@ -114,6 +117,15 @@ class Interception(UI):
                 logger.info('Click %s @ CHALLANGE' % point2str(360, 1030))
                 self.device.click_minitouch(360, 1030)
                 # self.device.sleep(1)
+                enter_level_timer.reset()
+                continue
+
+            # Kamdzy - fallback: if no boss name shows up after 3s, we're on the overview page - tap LEVEL card
+            if enter_level_timer.reached():
+                logger.info('Click %s @ LEVEL_CARD (en-US overview fallback)' % point2str(120, 460))
+                self.device.click_minitouch(120, 460)
+                self.device.sleep(2)
+                enter_level_timer.reset()
                 continue
 
             if (
