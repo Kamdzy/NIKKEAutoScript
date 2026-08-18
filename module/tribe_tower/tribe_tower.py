@@ -257,5 +257,10 @@ class TribeTower(UI):
 
     def run(self):
         self.ui_ensure(page_tribe_tower)
-        self._run()
+        # Kamdzy - catch NoAvailableCompany locally so the task exits cleanly
+        # for accounts that haven't unlocked any tribe faction tower yet
+        try:
+            self._run()
+        except NoAvailableCompany:
+            logger.warning('No tribe tower is unlocked yet; skipping task')
         self.config.task_delay(server_update=True)
