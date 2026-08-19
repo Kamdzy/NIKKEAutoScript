@@ -144,9 +144,21 @@ class Conversation(UI):
                 return
         else:
             try:
+                # Kamdzy - require 3 consecutive OCR reads of 0 before giving up. Single-read
+                # OCR misfires on the OPPORTUNITY digit during page transitions caused the
+                # task to abort with 2/3 real charges still available.
                 if not self.opportunity_remain:
-                    logger.warning('There are no remaining opportunities')
-                    raise NoOpportunitiesRemain
+                    zero_reads = 1
+                    for _ in range(2):
+                        self.device.sleep(0.4)
+                        self.device.screenshot()
+                        if self.opportunity_remain:
+                            zero_reads = 0
+                            break
+                        zero_reads += 1
+                    if zero_reads >= 3:
+                        logger.warning('There are no remaining opportunities')
+                        raise NoOpportunitiesRemain
                 if CONVERSATION_CHECK.match(self.device.image, offset=5):
                     r = [
                         i.get('area')
