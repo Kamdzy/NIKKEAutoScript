@@ -144,41 +144,9 @@ class Conversation(UI):
                 return
         else:
             try:
-                # Kamdzy - transition-animation guard: after a click, the game paints a blue-tint
-                # animation frame over the Nikke detail page for ~1.5s. During that time DETAIL_CHECK
-                # (red "Attributes" button) fails template match, and OPPORTUNITY OCR at
-                # (518,310,690,344) reads 0. Sleep-and-retry up to ~3s. Only raise if BOTH the
-                # OCR stays 0 AND we can't confirm we're on the detail page (via upstream's own
-                # 0.71 threshold, matching what the top-of-function branch uses). If we ARE on the
-                # detail page (upstream threshold), just return None so the outer while-1 loop in
-                # run()/opportunity() rescreenshots and re-enters the detail branch cleanly.
                 if not self.opportunity_remain:
-                    settled = False
-                    for _ in range(6):
-                        self.device.sleep(0.5)
-                        self.device.screenshot()
-                        # Use SAME thresholds as line 88-90 so we only defer when the upstream
-                        # branch would actually accept us as being on the detail page next time.
-                        if DETAIL_CHECK.match(self.device.image, threshold=0.71) and GIFT.match_appear_on(
-                            self.device.image, threshold=10
-                        ):
-                            return
-                        if self.opportunity_remain:
-                            settled = True
-                            break
-                    if not settled:
-                        # Kamdzy - dump screenshot so we can diagnose why DETAIL_CHECK missed but OCR read 0
-                        try:
-                            import os, cv2
-                            os.makedirs('./log/error/conversation', exist_ok=True)
-                            from datetime import datetime
-                            _p = f'./log/error/conversation/zero_abort_{int(datetime.now().timestamp())}.png'
-                            cv2.imwrite(_p, self.device.image)
-                            logger.warning(f'Kamdzy: saved abort screenshot to {_p}')
-                        except Exception as _e:
-                            logger.warning(f'Kamdzy: failed to save abort screenshot: {_e}')
-                        logger.warning('There are no remaining opportunities')
-                        raise NoOpportunitiesRemain
+                    logger.warning('There are no remaining opportunities')
+                    raise NoOpportunitiesRemain
                 if CONVERSATION_CHECK.match(self.device.image, offset=5):
                     r = [
                         i.get('area')
@@ -189,8 +157,10 @@ class Conversation(UI):
                         self.device.click_minitouch(*find_center(r[0]))
                     else:
                         self.device.click_minitouch(380, 450)
-                    # TODO
-                    self.device.sleep(2)
+                    # Kamdzy - was 2s; en-US paints a ~2.5s blue-tint transition after the click
+                    # during which DETAIL_CHECK fails and OPPORTUNITY OCR reads 0. Give animation
+                    # time to settle before the recursive call re-screenshots.
+                    self.device.sleep(3.5)
             # Kamdzy - don't let the broad catch swallow NoOpportunitiesRemain / other control-flow exceptions
             except (NoOpportunitiesRemain, ConversationFavouriteDone, ChooseNextNIKKETooLong):
                 raise
