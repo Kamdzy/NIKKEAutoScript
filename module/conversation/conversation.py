@@ -33,7 +33,10 @@ class ConversationFavouriteDone(Exception):
 
 
 class Conversation(UI):
-    _confirm_timer = Timer(4, count=30)
+    # Kamdzy - reduced from Timer(4, count=30) which took ~45s to abort the NEXT_NIKKE cycle
+    # when all remaining Nikkes are done today. 8 cycles / 4s is enough to observe a full cycle
+    # (~5 Nikkes visible) and confirm no more available.
+    _confirm_timer = Timer(4, count=8)
 
     @property
     def opportunity_remain(self):
@@ -145,6 +148,16 @@ class Conversation(UI):
         else:
             try:
                 if not self.opportunity_remain:
+                    # Kamdzy - dump for diagnosis
+                    try:
+                        import os, cv2
+                        os.makedirs('./log/error/conversation', exist_ok=True)
+                        from datetime import datetime
+                        _p = f'./log/error/conversation/zero_abort_{int(datetime.now().timestamp())}.png'
+                        cv2.imwrite(_p, self.device.image)
+                        logger.warning(f'Kamdzy: dumped zero-abort screen to {_p}')
+                    except Exception as _e:
+                        logger.warning(f'Kamdzy: dump failed: {_e}')
                     logger.warning('There are no remaining opportunities')
                     raise NoOpportunitiesRemain
                 if CONVERSATION_CHECK.match(self.device.image, offset=5):
