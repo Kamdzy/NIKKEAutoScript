@@ -194,6 +194,10 @@ class Daily(UI):
     def sending(self, skip_first_screenshot=True):
         logger.info('Sending......')
         click_timer = Timer(0.3)
+        # Kamdzy - abort the popup after ~8s of not finding a giftable item so the task
+        # doesn't spin forever when the Nikke has no R-rank affection coupons in inventory
+        # (only Weekend/Daily Vouchers etc). Only counts while we're on the gift-select popup.
+        popup_timeout = Timer(8, count=20)
 
         send_done = False
         while 1:
@@ -237,7 +241,20 @@ class Daily(UI):
             # 选择礼物
             if click_timer.reached() and self.appear_then_click(GIFT_RANK_R, offset=5, interval=1, static=False):
                 click_timer.reset()
+                popup_timeout.clear()
                 continue
+
+            # Kamdzy - if the gift popup is open and no giftable R-rank item found after ~8s,
+            # close it and skip this Nikke. Otherwise the task loops forever on Nikkes that
+            # only have non-affection-coupon vouchers in inventory.
+            if not send_done:
+                if not popup_timeout.started():
+                    popup_timeout.start()
+                if popup_timeout.reached():
+                    logger.info('No R-rank affection coupon found for this Nikke, closing popup and skipping')
+                    self.device.click_minitouch(655, 180)  # X close on gift popup
+                    self.device.sleep(1)
+                    return
 
             # 送礼
             if (
