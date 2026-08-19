@@ -144,14 +144,21 @@ class Conversation(UI):
                 return
         else:
             try:
-                # Kamdzy - require 3 consecutive OCR reads of 0 before giving up. Single-read
-                # OCR misfires on the OPPORTUNITY digit during page transitions caused the
-                # task to abort with 2/3 real charges still available.
+                # Kamdzy - require 3 consecutive OCR reads of 0 before giving up, AND recover if
+                # we're actually on a Nikke DETAIL page (transient DETAIL_CHECK miss put us in
+                # the wrong branch and the OPPORTUNITY area on the detail page reads as 0).
                 if not self.opportunity_remain:
                     zero_reads = 1
                     for _ in range(2):
                         self.device.sleep(0.4)
                         self.device.screenshot()
+                        # If DETAIL_CHECK matches during the retry, we're on a Nikke's page - not out of
+                        # charges. Return and let the recursive get_next_target() re-enter via the
+                        # detail branch which handles OPPORTUNITY_B / next-nikke properly.
+                        if DETAIL_CHECK.match(self.device.image, threshold=0.71) and GIFT.match_appear_on(
+                            self.device.image, threshold=10
+                        ):
+                            return self.get_next_target()
                         if self.opportunity_remain:
                             zero_reads = 0
                             break
