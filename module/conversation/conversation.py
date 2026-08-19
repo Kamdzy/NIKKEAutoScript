@@ -153,6 +153,21 @@ class Conversation(UI):
                         for i in FAVOURITE_CHECK.match_several(self.device.image, threshold=0.71, static=False)
                     ]
                     r.sort(key=lambda x: x[1])
+                    # Kamdzy - skip Nikkes with "CASE CLOSED" badge (already consulted today).
+                    # Otherwise NKAS clicks the first Nikke by y-coord even if she's done,
+                    # then falls into the wrong flow-branch on her detail page.
+                    try:
+                        closed_ys = [
+                            (a[1] + a[3]) // 2
+                            for a in (i.get('area') for i in CASE_CLOSED.match_several(
+                                self.device.image, threshold=0.85, static=False
+                            ))
+                        ]
+                    except Exception:
+                        closed_ys = []
+                    if closed_ys:
+                        r = [a for a in r if not any(abs(((a[1] + a[3]) // 2) - cy) < 70 for cy in closed_ys)]
+                        logger.info(f'Skipping {len(closed_ys)} Nikke(s) with CASE CLOSED; {len(r)} candidates remain')
                     if len(r) > 0:
                         self.device.click_minitouch(*find_center(r[0]))
                     else:
