@@ -144,26 +144,35 @@ class Conversation(UI):
                 return
         else:
             try:
-                # Kamdzy - require 3 consecutive OCR reads of 0 before giving up, AND recover if
-                # we're actually on a Nikke DETAIL page (transient DETAIL_CHECK miss put us in
-                # the wrong branch and the OPPORTUNITY area on the detail page reads as 0).
+                # Kamdzy - transition-animation guard: after a click, the game paints a blue-tint
+                # animation frame over the Nikke detail page for ~1.5s. During that time DETAIL_CHECK
+                # (red "Attributes" button) fails template match, and OPPORTUNITY OCR at
+                # (518,310,690,344) reads 0. Sleep-and-retry up to ~2.5s while checking both signals.
                 if not self.opportunity_remain:
-                    zero_reads = 1
-                    for _ in range(2):
-                        self.device.sleep(0.4)
+                    settled = False
+                    for _ in range(5):
+                        self.device.sleep(0.5)
                         self.device.screenshot()
-                        # If DETAIL_CHECK matches during the retry, we're on a Nikke's page - not out of
-                        # charges. Return and let the recursive get_next_target() re-enter via the
-                        # detail branch which handles OPPORTUNITY_B / next-nikke properly.
-                        if DETAIL_CHECK.match(self.device.image, threshold=0.71) and GIFT.match_appear_on(
-                            self.device.image, threshold=10
-                        ):
+                        # Detail page detected - either the "Attributes" button (any tint)
+                        # or the Gift button color matches. Recurse so the detail branch runs.
+                        detail_match = DETAIL_CHECK.match(self.device.image, threshold=0.55)
+                        gift_color = GIFT.match_appear_on(self.device.image, threshold=40)
+                        if detail_match or gift_color:
                             return self.get_next_target()
                         if self.opportunity_remain:
-                            zero_reads = 0
+                            settled = True
                             break
-                        zero_reads += 1
-                    if zero_reads >= 3:
+                    if not settled:
+                        # Kamdzy - dump screenshot so we can diagnose why DETAIL_CHECK missed but OCR read 0
+                        try:
+                            import os, cv2
+                            os.makedirs('./log/error/conversation', exist_ok=True)
+                            from datetime import datetime
+                            _p = f'./log/error/conversation/zero_abort_{int(datetime.now().timestamp())}.png'
+                            cv2.imwrite(_p, self.device.image)
+                            logger.warning(f'Kamdzy: saved abort screenshot to {_p}')
+                        except Exception as _e:
+                            logger.warning(f'Kamdzy: failed to save abort screenshot: {_e}')
                         logger.warning('There are no remaining opportunities')
                         raise NoOpportunitiesRemain
                 if CONVERSATION_CHECK.match(self.device.image, offset=5):
