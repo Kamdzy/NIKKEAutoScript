@@ -507,6 +507,13 @@ class EventStory(EventBase):
             while 1:
                 self.device.screenshot()
 
+                # Kamdzy - recover if story() broke out early during transition and we're still on the Story splash ENTER page.
+                # STORY_1_CHECK is the ENTER button; clicking it advances to the stage list where STORY_PART_CHECK matches.
+                if hasattr(self.event_assets, 'STORY_1_CHECK') and self.appear_then_click(
+                    self.event_assets.STORY_1_CHECK, offset=(10, 10), interval=3
+                ):
+                    continue
+
                 # 打开关卡
                 if grid_mode:
                     if (
