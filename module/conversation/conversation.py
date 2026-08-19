@@ -147,18 +147,22 @@ class Conversation(UI):
                 # Kamdzy - transition-animation guard: after a click, the game paints a blue-tint
                 # animation frame over the Nikke detail page for ~1.5s. During that time DETAIL_CHECK
                 # (red "Attributes" button) fails template match, and OPPORTUNITY OCR at
-                # (518,310,690,344) reads 0. Sleep-and-retry up to ~2.5s while checking both signals.
+                # (518,310,690,344) reads 0. Sleep-and-retry up to ~3s. Only raise if BOTH the
+                # OCR stays 0 AND we can't confirm we're on the detail page (via upstream's own
+                # 0.71 threshold, matching what the top-of-function branch uses). If we ARE on the
+                # detail page (upstream threshold), just return None so the outer while-1 loop in
+                # run()/opportunity() rescreenshots and re-enters the detail branch cleanly.
                 if not self.opportunity_remain:
                     settled = False
-                    for _ in range(5):
+                    for _ in range(6):
                         self.device.sleep(0.5)
                         self.device.screenshot()
-                        # Detail page detected - either the "Attributes" button (any tint)
-                        # or the Gift button color matches. Recurse so the detail branch runs.
-                        detail_match = DETAIL_CHECK.match(self.device.image, threshold=0.55)
-                        gift_color = GIFT.match_appear_on(self.device.image, threshold=40)
-                        if detail_match or gift_color:
-                            return self.get_next_target()
+                        # Use SAME thresholds as line 88-90 so we only defer when the upstream
+                        # branch would actually accept us as being on the detail page next time.
+                        if DETAIL_CHECK.match(self.device.image, threshold=0.71) and GIFT.match_appear_on(
+                            self.device.image, threshold=10
+                        ):
+                            return
                         if self.opportunity_remain:
                             settled = True
                             break
