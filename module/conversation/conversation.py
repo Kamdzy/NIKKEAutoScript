@@ -33,10 +33,7 @@ class ConversationFavouriteDone(Exception):
 
 
 class Conversation(UI):
-    # Kamdzy - reduced from Timer(4, count=30) which took ~45s to abort the NEXT_NIKKE cycle
-    # when all remaining Nikkes are done today. 8 cycles / 4s is enough to observe a full cycle
-    # (~5 Nikkes visible) and confirm no more available.
-    _confirm_timer = Timer(4, count=8)
+    _confirm_timer = Timer(4, count=30)
 
     @property
     def opportunity_remain(self):
