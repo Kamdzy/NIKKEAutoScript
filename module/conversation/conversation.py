@@ -154,28 +154,34 @@ class Conversation(UI):
                     ]
                     r.sort(key=lambda x: x[1])
                     # Kamdzy - skip Nikkes with "CASE CLOSED" badge (already consulted today).
-                    # Otherwise NKAS clicks the first Nikke by y-coord even if she's done,
-                    # then falls into the wrong flow-branch on her detail page.
+                    # match_several returns multiple hits per badge (adjacent local maxima),
+                    # so dedupe by y-coord (merge matches within 100px).
                     try:
-                        closed_ys = [
-                            (a[1] + a[3]) // 2
-                            for a in (i.get('area') for i in CASE_CLOSED.match_several(
-                                self.device.image, threshold=0.85, static=False
-                            ))
-                        ]
+                        raw_closed = [i.get('area') for i in CASE_CLOSED.match_several(
+                            self.device.image, threshold=0.85, static=False
+                        )]
                     except Exception:
-                        closed_ys = []
+                        raw_closed = []
+                    closed_ys = []
+                    for a in raw_closed:
+                        cy = (a[1] + a[3]) // 2
+                        if not any(abs(cy - existing) < 100 for existing in closed_ys):
+                            closed_ys.append(cy)
                     if closed_ys:
+                        before = len(r)
                         r = [a for a in r if not any(abs(((a[1] + a[3]) // 2) - cy) < 70 for cy in closed_ys)]
-                        logger.info(f'Skipping {len(closed_ys)} Nikke(s) with CASE CLOSED; {len(r)} candidates remain')
+                        logger.info(f'Skipping {len(closed_ys)} CASE CLOSED Nikke(s): {before} -> {len(r)} candidates')
                     if len(r) > 0:
                         self.device.click_minitouch(*find_center(r[0]))
+                        # Kamdzy - was 2s; en-US paints a ~2.5s blue-tint transition after the click
+                        # during which DETAIL_CHECK fails and OPPORTUNITY OCR reads 0. Give animation
+                        # time to settle before the recursive call re-screenshots.
+                        self.device.sleep(3.5)
                     else:
-                        self.device.click_minitouch(380, 450)
-                    # Kamdzy - was 2s; en-US paints a ~2.5s blue-tint transition after the click
-                    # during which DETAIL_CHECK fails and OPPORTUNITY OCR reads 0. Give animation
-                    # time to settle before the recursive call re-screenshots.
-                    self.device.sleep(3.5)
+                        # Kamdzy - no eligible Nikkes; don't blind-click (would land on a CASE-CLOSED
+                        # row). Raise cleanly so the task ends without pointless clicks.
+                        logger.warning('All visible Nikkes are CASE CLOSED (or none matched FAVOURITE_CHECK)')
+                        raise ConversationFavouriteDone
             # Kamdzy - don't let the broad catch swallow NoOpportunitiesRemain / other control-flow exceptions
             except (NoOpportunitiesRemain, ConversationFavouriteDone, ChooseNextNIKKETooLong):
                 raise
