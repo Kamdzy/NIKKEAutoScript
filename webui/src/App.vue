@@ -1436,17 +1436,17 @@ onBeforeUnmount(() => {
                       <template v-else-if="field.path_picker">
                         <div class="path-field">
                           <input type="text" :value="field.value" :readonly="field.display !== 'show'" @input="onTextInput(field, $event)" @change="save(field, $event)">
-                          <FieldPathPicker :value="field.value" :picker="field.path_picker" :disabled="field.display !== 'show'" @picked="pickedPath(field, $event)" @error="error = $event"/>
+                          <FieldPathPicker :value="field.value" :picker="field.path_picker" :disabled="field.display !== 'show'" :language="systemStatus.language" @picked="pickedPath(field, $event)" @error="error = $event"/>
                         </div>
                       </template>
                       <div v-else-if="field.widget === 'textarea'" class="code-wrap" :class="{ 'code-wrap-resizable': isStructuredTextarea(field) }">
                         <pre v-if="isStructuredTextarea(field)" class="code-highlight" v-html="highlightTextarea(field)"></pre>
                         <textarea v-autosize :class="{ 'code-input': isStructuredTextarea(field), 'textarea-mono': field.mode !== 'text' }" :value="field.value" :readonly="field.display !== 'show'" :inputmode="field.mode === 'url' ? 'url' : 'text'" spellcheck="false" @input="onTextareaInput(field, $event)" @change="save(field, $event)"></textarea>
                       </div>
-                      <FieldItemTable v-else-if="field.widget === 'item_table'" :data="field.special_data" :loading="!field.special_data"/>
+                      <FieldItemTable v-else-if="field.widget === 'item_table'" :data="field.special_data" :loading="!field.special_data" :language="systemStatus.language"/>
                       <FieldPriority v-else-if="field.widget === 'priority'" :value="field.value" :options="field.options" :disabled="field.display !== 'show'" :placeholder="t('添加')" @change="(value: string) => saveValue(field, value).catch(() => {})"/>
-                      <FieldInterception v-else-if="field.widget === 'interception_stone_import'" :widget="field.widget" :busy="Boolean(importBusy[field.key])" @import="importInterception(field, $event)" @error="error = $event"/>
-                      <FieldInterception v-else-if="field.widget === 'interception_stone_charts'" :widget="field.widget" :data="field.special_data"/>
+                      <FieldInterception v-else-if="field.widget === 'interception_stone_import'" :widget="field.widget" :busy="Boolean(importBusy[field.key])" :language="systemStatus.language" @import="importInterception(field, $event)" @error="error = $event"/>
+                      <FieldInterception v-else-if="field.widget === 'interception_stone_charts'" :widget="field.widget" :data="field.special_data" :language="systemStatus.language"/>
                       <template v-else-if="field.widget === 'datetime'">
                         <div class="dt-field">
                           <input type="datetime-local" :value="datetimeValue(field.value)" :readonly="field.display !== 'show'" @input="scheduleDatetimeSave(field, $event)" @blur="flushDatetimeSave(field, $event)">
