@@ -3,8 +3,8 @@ Deploy:
     # URL of NikkeAutoScript repository
     # [CN user] Use 'https://git.megumiss.top/megumiss/NIKKEAutoScript' for faster and more stable download
     # [Gitee] Use 'https://gitee.com/megumiss/NIKKEAutoScript', may require login
-    # [Other] Use 'https://github.com/megumiss/NIKKEAutoScript'
-    Repository: https://github.com/megumiss/NIKKEAutoScript
+    # [Other] Use 'https://github.com/Kamdzy/NIKKEAutoScript'
+    Repository: https://github.com/Kamdzy/NIKKEAutoScript
     # Branch of NKAS
     # [Developer] Use 'dev', 'app', etc, to try new features
     # [Other] Use 'master', the stable branch
@@ -81,7 +81,7 @@ Deploy:
     AutoRestartTime: 03:50
     # Desktop shell update manifest. The desktop version is independent from the project release tag.
     # [Default] Use 'https://nkas.megumiss.top/releases/latest/nkas-desktop.json', hosted on the official VPS (faster for CN users)
-    # [Other] Use 'https://github.com/megumiss/NIKKEAutoScript/releases/latest/download/nkas-desktop.json' to update from GitHub Release
+    # [Other] Use 'https://github.com/Kamdzy/NIKKEAutoScript/releases/latest/download/nkas-desktop.json' to update from GitHub Release
     DesktopUpdateManifest: https://nkas.megumiss.top/releases/latest/nkas-desktop.json
 
   Webui:
