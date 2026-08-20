@@ -191,7 +191,7 @@ const staticLabels: Record<string, Record<string, string>> = {
   '源码更新': { 'en-US': 'Source update', 'ja-JP': 'ソースコード更新' }, '当前版本': { 'en-US': 'Current version', 'ja-JP': '現在のバージョン' }, '更新': { 'en-US': 'Update', 'ja-JP': '更新' },
   '检查更新': { 'en-US': 'Check for updates', 'ja-JP': '更新を確認' }, '强制重启': { 'en-US': 'Restart now', 'ja-JP': '今すぐ再起動' }, '更新记录': { 'en-US': 'History', 'ja-JP': '更新履歴' },
   '检查中…': { 'en-US': 'Checking…', 'ja-JP': '確認中…' }, '更新中…': { 'en-US': 'Updating…', 'ja-JP': '更新中…' }, '更新失败': { 'en-US': 'Update failed', 'ja-JP': '更新失敗' }, '更新完成，正在刷新页面…': { 'en-US': 'Update finished, reloading…', 'ja-JP': '更新完了、再読み込み中…' }, '立即更新': { 'en-US': 'Update now', 'ja-JP': '今すぐ更新' }, '重试更新': { 'en-US': 'Retry update', 'ja-JP': '更新を再試行' }, '更新超时，请稍后手动刷新页面': { 'en-US': 'Update timed out, please reload later', 'ja-JP': '更新がタイムアウト、後で再読み込みしてください' },
-  '有新版本可用': { 'en-US': 'Update available', 'ja-JP': '新しいバージョンあり' }, '已是最新': { 'en-US': 'Up to date', 'ja-JP': '最新です' }, '发现新版本，可在更新页更新': { 'en-US': 'New version found — see the update page', 'ja-JP': '新しいバージョンを検出、更新ページへ' }, '前往更新': { 'en-US': 'Go to update', 'ja-JP': '更新ページへ' },
+  '有新版本可用': { 'en-US': 'Update available', 'ja-JP': '新しいバージョンあり' }, '已是最新': { 'en-US': 'Up to date', 'ja-JP': '最新です' }, '检查更新失败': { 'en-US': 'Update check failed', 'ja-JP': '更新の確認に失敗しました' }, '发现新版本，可在更新页更新': { 'en-US': 'New version found — see the update page', 'ja-JP': '新しいバージョンを検出、更新ページへ' }, '前往更新': { 'en-US': 'Go to update', 'ja-JP': '更新ページへ' },
   '启动器更新': { 'en-US': 'Launcher update', 'ja-JP': 'ランチャー更新' }, '此功能仅在1.x版本中可用': { 'en-US': 'Only available in version 1.x', 'ja-JP': 'バージョン1.xでのみ利用できます' },
   '更新nkas程序（exe）本身': { 'en-US': 'Updates the nkas program (exe) itself', 'ja-JP': 'nkasプログラム（exe）本体を更新します' },
   '启动器有新版本，可在更新页更新': { 'en-US': 'New launcher version available — see the update page', 'ja-JP': 'ランチャーの新しいバージョンがあります。更新ページへ' },
@@ -209,6 +209,8 @@ const staticLabels: Record<string, Record<string, string>> = {
   'PC 客户端需要脚本以管理员权限运行。请退出程序，右键启动程序或快捷方式，在「属性 → 兼容性」中勾选「以管理员身份运行此程序」，然后重新启动。': { 'en-US': 'The PC client requires the script to run with administrator privileges. Exit the program, right-click the launcher or shortcut, tick "Run this program as an administrator" under Properties → Compatibility, then start it again.', 'ja-JP': 'PCクライアントの利用には管理者権限が必要です。プログラムを終了し、起動プログラムまたはショートカットを右クリックして、「プロパティ → 互換性」で「管理者としてこのプログラムを実行する」にチェックを入れてから再起動してください。' },
   '公告中心': { 'en-US': 'Announcements', 'ja-JP': 'お知らせ' }, '暂无公告': { 'en-US': 'No announcements', 'ja-JP': 'お知らせはありません' }, '未读': { 'en-US': 'Unread', 'ja-JP': '未読' }, '我知道了': { 'en-US': 'Got it', 'ja-JP': 'わかりました' },
   '有新的系统通知。': { 'en-US': 'You have a new system notice.', 'ja-JP': '新しいシステム通知があります。' },
+  '自动更新失败': { 'en-US': 'Auto-update failed', 'ja-JP': '自動更新に失敗しました' },
+  '启动时的自动更新未成功，已跳过更新并继续使用当前版本。': { 'en-US': 'Auto-update at startup did not succeed; skipped and continuing with the current version.', 'ja-JP': '起動時の自動更新に失敗しました。更新をスキップし、現在のバージョンで続行します。' },
   '后端连接中断，正在等待恢复…': { 'en-US': 'Backend disconnected, waiting to reconnect…', 'ja-JP': 'バックエンド切断、再接続待ち…' },
   '导入失败': { 'en-US': 'Import failed', 'ja-JP': 'インポート失敗' },
   '取消': { 'en-US': 'Cancel', 'ja-JP': 'キャンセル' }, '确定': { 'en-US': 'OK', 'ja-JP': 'OK' },
@@ -238,6 +240,16 @@ const staticLabels: Record<string, Record<string, string>> = {
   '系统通知发送失败': { 'en-US': 'Failed to send system notification', 'ja-JP': 'システム通知の送信に失敗しました' },
   'OnePush 推送成功': { 'en-US': 'OnePush push succeeded', 'ja-JP': 'OnePush プッシュ成功' },
   'OnePush 推送失败，请检查配置': { 'en-US': 'OnePush push failed, please check the configuration', 'ja-JP': 'OnePush プッシュ失敗、設定を確認してください' },
+  '登录获取 Cookie（BETA）': { 'en-US': 'Login for Cookie (BETA)', 'ja-JP': 'ログインで Cookie 取得（BETA）' },
+  '使用NKAS设置-账号设置中的LiPass账号自动登录妮游社，成功后自动填写 Cookie 和 XCommonParams；如出现滑块验证码，在弹窗中的图片上拖动完成。': { 'en-US': 'Log in to Blablalink automatically with the LiPass account from NKAS Settings - Account Settings; Cookie and XCommonParams are filled in on success. If a slider captcha appears, drag it on the image in the popup.', 'ja-JP': 'NKAS設定-アカウント設定の LiPass アカウントで Blablalink に自動ログインし、成功時に Cookie と XCommonParams を自動入力します。スライダー認証が出た場合はポップアップ内の画像上でドラッグしてください。' },
+  '一键登录': { 'en-US': 'One-click login', 'ja-JP': 'ワンクリックログイン' },
+  '登录中…': { 'en-US': 'Logging in…', 'ja-JP': 'ログイン中…' },
+  '正在启动浏览器…': { 'en-US': 'Launching browser…', 'ja-JP': 'ブラウザを起動中…' },
+  '正在自动填写账号密码…': { 'en-US': 'Filling in account and password…', 'ja-JP': 'アカウント情報を自動入力中…' },
+  '请完成滑块验证': { 'en-US': 'Please complete the slider captcha', 'ja-JP': 'スライダー認証を完了してください' },
+  '登录成功，Cookie 已自动填写': { 'en-US': 'Login succeeded, Cookie filled in', 'ja-JP': 'ログイン成功、Cookie を自動入力しました' },
+  '登录失败': { 'en-US': 'Login failed', 'ja-JP': 'ログイン失敗' },
+  '登录超时，请重试': { 'en-US': 'Login timed out, please retry', 'ja-JP': 'ログインがタイムアウトしました。再試行してください' },
 }
 
 const languageOptions = [{ value: 'zh-CN', label: '简体中文' }, { value: 'en-US', label: 'English' }, { value: 'ja-JP', label: '日本語' }]
@@ -611,6 +623,104 @@ async function testNotify() {
     notify(parts.join('；'), result.ok ? 'ok' : 'error', 4000)
   } catch (exception: any) { error.value = exception.message } finally { notifyTestBusy.value = false }
 }
+// BlaAuth 自动登录：后端无头浏览器跑登录流程，前端弹窗轮询状态；
+// 出现滑块验证码时把截图渲染在弹窗里，拖拽事件实时转发给后端驱动页面鼠标。
+const blaLoginOpen = ref(false)
+const blaLoginBusy = ref(false)
+const blaLoginState = ref('')
+const blaShotUrl = ref('')
+let blaLoginTimer: ReturnType<typeof setTimeout> | undefined
+let blaShotTimer: ReturnType<typeof setInterval> | undefined
+let blaDragging = false
+let blaLastMoveSent = 0
+function blaStateText() {
+  if (blaLoginState.value === 'launching') return t('正在启动浏览器…')
+  if (blaLoginState.value === 'logging_in') return t('正在自动填写账号密码…')
+  if (blaLoginState.value === 'captcha') return t('请完成滑块验证')
+  return t('登录中…')
+}
+function blaLoginStop() {
+  if (blaLoginTimer) { clearTimeout(blaLoginTimer); blaLoginTimer = undefined }
+  if (blaShotTimer) { clearInterval(blaShotTimer); blaShotTimer = undefined }
+  blaLoginBusy.value = false; blaShotUrl.value = ''; blaDragging = false
+}
+function blaFormatExpire(ts: number) {
+  const d = new Date(ts * 1000)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const off = -d.getTimezoneOffset()
+  const sign = off >= 0 ? '+' : '-'
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} ${sign}${pad(Math.floor(Math.abs(off) / 60))}${pad(Math.abs(off) % 60)}`
+}
+async function pollBlaLogin() {
+  let st: any
+  try { st = await api.get(`/api/${selectedName.value}/bla/login/status`) } catch { blaLoginTimer = setTimeout(pollBlaLogin, 2000); return }
+  blaLoginState.value = st.state || ''
+  if (st.state === 'captcha') {
+    // 验证码图片走独立端点 200ms 直刷，跟手且不占状态轮询
+    if (!blaShotTimer) {
+      blaShotUrl.value = `/api/${selectedName.value}/bla/login/shot?t=${Date.now()}`
+      blaShotTimer = setInterval(() => { blaShotUrl.value = `/api/${selectedName.value}/bla/login/shot?t=${Date.now()}` }, 200)
+    }
+    blaLoginTimer = setTimeout(pollBlaLogin, 800)
+    return
+  }
+  if (st.state === 'launching' || st.state === 'logging_in') { blaLoginTimer = setTimeout(pollBlaLogin, 1000); return }
+  blaLoginOpen.value = false
+  if (st.state === 'success') {
+    const result = st.result || {}
+    const apply = (key: string, value: string) => { const field = allFields().find(item => item.key === key); if (field && value !== undefined) field.value = value }
+    apply('BlaAuth.BlaAuth.Cookie', result.cookie)
+    apply('BlaAuth.BlaAuth.XCommonParams', result.xcommonparams)
+    apply('BlaAuth.BlaAuth.LoginUser', result.username || '')
+    if (result.expire) apply('BlaAuth.BlaAuth.TokenExpire', blaFormatExpire(result.expire))
+    blaLoginStop()
+    notify(t('登录成功，Cookie 已自动填写'), 'ok', 4000)
+    return
+  }
+  if (st.state === 'cancelled') { blaLoginStop(); return }
+  if (st.state === 'timeout') { blaLoginStop(); notify(t('登录超时，请重试'), 'error', 4000); return }
+  if (st.state === 'error') { blaLoginStop(); notify(`${t('登录失败')}${st.error ? `：${st.error}` : ''}`, 'error', 6000); return }
+  blaLoginStop()
+}
+async function startBlaLogin() {
+  if (blaLoginBusy.value) return
+  blaLoginOpen.value = true
+  blaLoginBusy.value = true
+  blaLoginState.value = 'launching'
+  try {
+    await api.post(`/api/${selectedName.value}/bla/login`)
+    blaLoginTimer = setTimeout(pollBlaLogin, 800)
+  } catch (exception: any) { blaLoginOpen.value = false; blaLoginStop(); error.value = exception.message }
+}
+async function closeBlaLogin() {
+  try { await api.post(`/api/${selectedName.value}/bla/login/cancel`) } catch { /* ignore */ }
+  blaLoginOpen.value = false
+  blaLoginStop()
+}
+function blaSendDrag(phase: string, event: PointerEvent) {
+  const img = event.target as HTMLImageElement
+  const scale = img.naturalWidth > 0 && img.clientWidth > 0 ? img.naturalWidth / img.clientWidth : 1
+  api.post(`/api/${selectedName.value}/bla/login/drag`, { phase, x: event.offsetX * scale, y: event.offsetY * scale }).catch(() => {})
+}
+function blaDragStart(event: PointerEvent) {
+  event.preventDefault()
+  ;(event.target as HTMLImageElement).setPointerCapture(event.pointerId)
+  blaDragging = true
+  blaLastMoveSent = 0
+  blaSendDrag('start', event)
+}
+function blaDragMove(event: PointerEvent) {
+  if (!blaDragging) return
+  const now = Date.now()
+  if (now - blaLastMoveSent < 40) return
+  blaLastMoveSent = now
+  blaSendDrag('move', event)
+}
+function blaDragEnd(event: PointerEvent) {
+  if (!blaDragging) return
+  blaDragging = false
+  blaSendDrag('end', event)
+}
 function toggleTheme() { const theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'; document.documentElement.dataset.theme = theme; localStorage.setItem('nkas-theme', theme); api.post('/api/system/theme', { theme }).then(() => systemStatus.value.theme = theme).catch(exception => error.value = exception.message) }
 async function setLanguage(language: string) { try { await api.post('/api/system/language', { language }); await loadSystem(); await loadWorkspace() } catch (exception: any) { error.value = exception.message } }
 // Deploy page: schema-driven editor over config/deploy.yaml.  The backend
@@ -882,6 +992,13 @@ async function checkUpdate() {
       await new Promise(resolve => setTimeout(resolve, 2000))
       updateInfo.value = await api.get('/api/system/update')
       if (updateInfo.value.state !== 'checking') break
+    }
+    // A failed check resolves to state "failed" (with the reason in
+    // `error`) instead of the idle 0/false, so surface it as a toast
+    // rather than letting the card silently read "up to date".
+    if (updateInfo.value.state === 'failed') {
+      const reason = String(updateInfo.value.error || '')
+      notify(t('检查更新失败') + (reason ? `：${reason}` : ''), 'error', 10000)
     }
   } catch (exception: any) { error.value = exception.message } finally { updateChecking.value = false }
 }
@@ -1212,10 +1329,16 @@ onBeforeUnmount(() => {
       <div v-if="notices.length" class="notice-stack">
         <article v-for="notice in notices" :key="notice.key" class="notice-card" :class="notice.type">
           <div>
-            <strong>{{ notice.key === 'auto_update' ? autoUpdateTitle(notice.data) : (notice.data.title || t('系统通知')) }}</strong>
+            <strong>{{ notice.key === 'auto_update' ? autoUpdateTitle(notice.data) : notice.key === 'auto_update_failed' ? t('自动更新失败') : (notice.data.title || t('系统通知')) }}</strong>
             <ul v-if="autoUpdatePreview(notice.data).length" class="notice-messages">
               <li v-for="(msg, index) in autoUpdatePreview(notice.data)" :key="index">• {{ msg }}</li>
             </ul>
+            <!-- Startup auto-update failure: explain what happened in the
+                 user's language, keep the raw git error as detail. -->
+            <template v-else-if="notice.key === 'auto_update_failed'">
+              <p>{{ t('启动时的自动更新未成功，已跳过更新并继续使用当前版本。') }}</p>
+              <p v-if="notice.data.error" class="notice-error-detail">{{ notice.data.error }}</p>
+            </template>
             <p v-else>{{ notice.data.content || notice.data.error || t('有新的系统通知。') }}</p>
           </div>
           <button class="btn sm" @click="dismissNotice(notice)">{{ t('知道了') }}</button>
@@ -1301,6 +1424,10 @@ onBeforeUnmount(() => {
                   <span class="group-summary">›</span>
                 </button>
                 <div class="group-body">
+                  <div v-if="selectedTask === 'BlaAuth' && group.key === 'BlaAuth'" class="field">
+                    <div class="field-label"><div class="fname">{{ t('登录获取 Cookie（BETA）') }}</div><div class="fhelp">{{ t('使用NKAS设置-账号设置中的LiPass账号自动登录妮游社，成功后自动填写 Cookie 和 XCommonParams；如出现滑块验证码，在弹窗中的图片上拖动完成。') }}</div></div>
+                    <div class="field-control"><button class="btn primary" :disabled="blaLoginBusy" @click="startBlaLogin">{{ blaLoginBusy ? t('登录中…') : t('一键登录') }}</button></div>
+                  </div>
                   <div v-for="field in group.fields" :key="field.key" :id="`field-${field.key}`" class="field" :class="{ 'field-wide': isWideField(field) }">
                     <div class="field-label"><div class="fname">{{ field.title }}</div><div v-if="field.help" class="fhelp">{{ field.help }}</div></div>
                     <div class="field-control">
@@ -1388,9 +1515,12 @@ onBeforeUnmount(() => {
         </article>
         <article class="card task-hero">
           <div class="task-icon">🚀</div>
-          <div style="flex:1"><h2>{{ t('源码更新') }}</h2><div class="sub">{{ t('当前版本') }} <code class="ver-pill">{{ systemStatus.version }}</code><span v-if="Number(updateInfo.state) === 1" class="update-hint"> · {{ t('有新版本可用') }}</span><span v-else-if="Number(updateInfo.state) === 0" class="sub"> · {{ t('已是最新') }}</span></div></div>
+          <div style="flex:1"><h2>{{ t('源码更新') }}</h2><div class="sub">{{ t('当前版本') }} <code class="ver-pill">{{ systemStatus.version }}</code><span v-if="Number(updateInfo.state) === 1" class="update-hint"> · {{ t('有新版本可用') }}</span><span v-else-if="Number(updateInfo.state) === 0" class="sub"> · {{ t('已是最新') }}</span><span v-else-if="updateInfo.state === 'failed'" class="update-error"> · {{ updateInfo.error ? t('检查更新失败') : t('更新失败') }}<span v-if="updateInfo.error">：{{ updateInfo.error }}</span></span></div></div>
           <button v-if="Number(updateInfo.state) === 1" class="btn success" :disabled="updating" @click="runUpdate"><span v-if="updating" class="btn-spin"></span>{{ updating ? t('更新中…') : t('立即更新') }}</button>
-          <button v-else-if="updateInfo.state === 'failed'" class="btn danger" :disabled="updating" @click="runUpdate"><span v-if="updating" class="btn-spin"></span>{{ updating ? t('更新中…') : t('重试更新') }}</button>
+          <!-- "failed" with an error message means the *check* failed (e.g.
+               network), so offer re-check instead of a full update+restart;
+               an empty error means a real update run failed, offer retry. -->
+          <button v-else-if="updateInfo.state === 'failed' && !updateInfo.error" class="btn danger" :disabled="updating" @click="runUpdate"><span v-if="updating" class="btn-spin"></span>{{ updating ? t('更新中…') : t('重试更新') }}</button>
           <button v-else class="btn primary" :disabled="updating || updateChecking || updateInfo.state === 'checking'" @click="checkUpdate">{{ updating ? t('更新中…') : (updateChecking || updateInfo.state === 'checking' ? t('检查中…') : t('检查更新')) }}</button>
           <button class="btn danger" :disabled="restarting" @click="forceRestart"><span v-if="restarting" class="btn-spin"></span>{{ restarting ? t('重启中…') : t('强制重启') }}</button>
         </article>
@@ -1565,6 +1695,18 @@ onBeforeUnmount(() => {
         <div class="modal-actions">
           <button v-if="modal.type !== 'alert'" class="btn" @click="modal.type = ''">{{ t('取消') }}</button>
           <button class="btn" :class="modal.type === 'delete' || modal.type === 'resetDeploy' ? 'danger' : 'primary'" :disabled="modal.busy || ((modal.type === 'create' || modal.type === 'rename') && !modal.name.trim())" @click="confirmModal">{{ modal.type === 'alert' ? t('知道了') : t('确定') }}</button>
+        </div>
+      </div>
+    </div>
+    <div v-if="blaLoginOpen" class="modal-mask">
+      <div class="modal-card">
+        <h3>{{ t('登录获取 Cookie（BETA）') }}</h3>
+        <p class="modal-text">{{ blaStateText() }}</p>
+        <template v-if="blaLoginState === 'captcha'">
+          <img :src="blaShotUrl" draggable="false" alt="captcha" style="display:block;margin:0 auto;max-width:100%;touch-action:none;user-select:none;-webkit-user-drag:none;cursor:grab" @pointerdown="blaDragStart" @pointermove="blaDragMove" @pointerup="blaDragEnd">
+        </template>
+        <div class="modal-actions">
+          <button class="btn danger" @click="closeBlaLogin">{{ t('取消') }}</button>
         </div>
       </div>
     </div>
