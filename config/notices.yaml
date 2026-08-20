@@ -1,50 +1,51 @@
-# 公告列表，新的公告追加到文件顶部
+# Announcement list; new announcements are appended to the top of the file
+# Kamdzy - translated to English for en-US NKAS fork
 - id: notice_20260819
   date: 2026-08-19
-  title: 妮游社自动登录获取 Cookie
+  title: LiPass auto-login for Cookie retrieval
   type: info
   content: |
-    <b>妮游社 Cookie 现已支持一键登录自动获取</b>
-    无需再手动复制 Cookie：妮游社 → Cookie → 点击「一键登录」，脚本会自动完成登录，并自动填写 Cookie、XCommonParams 和 Cookie 过期时间。
+    <b>LiPass Cookie now supports one-click auto-login</b>
+    No need to copy the Cookie manually: LiPass → Cookie → click "One-click login". The script performs the login automatically and fills in Cookie, XCommonParams and the Cookie expiry time for you.
 
-    <b>使用前准备</b>
-    在 NKAS 设置-账号设置 中填写 LiPass 账号和密码。
+    <b>Before you start</b>
+    In NKAS Settings → Account Settings, fill in your LiPass account and password.
 
-    <b>注意事项</b>
-    登录过程中如出现滑块验证码，在弹窗中的图片上拖动完成即可。首次使用会自动安装 playwright，本机没有 Chrome/Edge 时会自动下载 chromium，Docker 环境亦可使用。
+    <b>Notes</b>
+    If a slider CAPTCHA appears during login, just drag across the image in the popup to solve it. On first use, playwright is installed automatically; if the machine has no Chrome/Edge, chromium is downloaded automatically. This also works inside Docker.
 - id: notice_20260816
   date: 2026-08-16
-  title: 妮游社 Cookie 自动续期
+  title: LiPass Cookie auto-renewal
   type: info
   content: |
-    <b>妮游社 Cookie 现已支持自动续期</b>
-    Cookie 临近过期时任务会自动续期，无需再手动更新 Cookie。
+    <b>LiPass Cookie now supports auto-renewal</b>
+    Tasks renew the Cookie automatically before it expires — no manual refresh required.
 
-    <b>开启方法</b>
-    妮游社 → Cookie → 勾选「自动续期（BETA）」，并在 NKAS 设置-账号设置 中填写 LiPass 账号（只填写账号即可）。
+    <b>How to enable</b>
+    LiPass → Cookie → tick "Auto-renew (BETA)", and in NKAS Settings → Account Settings fill in your LiPass account (account only, no password needed).
 
-    <b>注意事项</b>
-    Cookie 一旦过期将无法续期，请保持任务正常运行。首次续期会自动安装 playwright，Docker 用户还会下载 chromium。
+    <b>Notes</b>
+    Once the Cookie has actually expired it cannot be renewed, so keep tasks running normally. The first renewal installs playwright automatically; Docker users will additionally download chromium.
 - id: notice_20260813
   date: 2026-08-13
-  title: 剧情活动提醒
+  title: Story event reminder
   type: info
   content: |
-    <b>本次剧情活动启用了新的自动推图逻辑，有问题请反馈</b>
+    <b>This story event uses new auto-push logic. Please report any issues.</b>
 - id: notice_20260806
   date: 2026-08-06
-  title: 全新版本更新
+  title: Major version update
   type: info
   content: |
-    <b>本次完全重写了前端部分，建议重新下载完整包使用</b>
-    <a href="https://github.com/megumiss/NIKKEAutoScript/releases/latest" target="_blank">GitHub Releases 下载页</a>
+    <b>The frontend has been fully rewritten; downloading the full package again is recommended.</b>
+    <a href="https://github.com/megumiss/NIKKEAutoScript/releases/latest" target="_blank">GitHub Releases download page</a>
 
-    <b>1. 新下载完整包的用户</b>
-    将旧版本目录下的 config 文件夹复制到新版本目录内覆盖，即可导入旧的配置与账号数据。
+    <b>1. Users installing the fresh full package</b>
+    Copy the old version's <code>config</code> folder into the new install to import your previous config and account data.
 
-    <b>2. 新增匿名使用统计</b>
-    启动时上报随机匿名 ID、源码Commit号、系统平台名称、屏幕分辨率，每天最多一次，不收集账号、配置等任何个人数据。
-    关闭方法：部署页面 → Statistics → EnableStatistics。
+    <b>2. New anonymous usage statistics</b>
+    On startup a random anonymous ID, source commit hash, platform name and screen resolution are reported (at most once per day). No account, config or personal data is collected.
+    To disable: Deploy page → Statistics → EnableStatistics.
 
-    <b>3. 问题反馈</b>
-    新版 exe 使用中如遇到问题，欢迎到 <a href="https://github.com/megumiss/NIKKEAutoScript/issues" target="_blank">GitHub Issues</a> 或者 <a href="https://qm.qq.com/q/ibQKuQI9Ko" target="_blank">QQ群</a> 反馈。
+    <b>3. Reporting issues</b>
+    If you hit problems with the new exe, please report them on <a href="https://github.com/megumiss/NIKKEAutoScript/issues" target="_blank">GitHub Issues</a> or in the <a href="https://qm.qq.com/q/ibQKuQI9Ko" target="_blank">QQ group</a>.
