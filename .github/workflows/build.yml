@@ -286,7 +286,7 @@ jobs:
         if (Test-Path ".git") { Remove-Item ".git" -Recurse -Force -ErrorAction SilentlyContinue }
         
         git init
-        git remote add origin https://github.com/megumiss/NIKKEAutoScript.git
+        git remote add origin https://github.com/${{ github.repository }}.git
         git fetch origin master --depth=1
         git reset --soft FETCH_HEAD
 
@@ -332,8 +332,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    if: github.event_name == 'push' || inputs.publish_exe == true
+    if: (github.event_name == 'push' || inputs.publish_exe == true) && vars.HAS_VPS_DEPLOY == 'true'
     steps:
+      # Kamdzy - guarded by repo variable HAS_VPS_DEPLOY so this whole job is
+      # skipped on forks that don't have megumiss's VPS SSH secrets. Set the
+      # variable to 'true' in repo Settings → Variables to re-enable it.
       # ==========================
       # 1. Resolve the tag to deploy
       # ==========================

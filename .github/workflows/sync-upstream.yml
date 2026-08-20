@@ -26,7 +26,7 @@ jobs:
       - name: Add upstream remote
         run: |
           git remote add upstream https://github.com/megumiss/NIKKEAutoScript.git || true
-          git fetch upstream
+          git fetch upstream --tags
 
       - name: Sync master branch
         id: sync
@@ -44,6 +44,10 @@ jobs:
         if: steps.sync.outputs.conflict == 'false'
         run: |
           git push origin master
+          # Kamdzy - propagate any new upstream tags so build.yml fires on Kamdzy
+          # for the same release version megumiss just published. Existing tags
+          # are not overwritten (no --force), so a Kamdzy-only re-tag is safe.
+          git push origin --tags
 
       - name: Send Discord notification on conflict
         if: failure() && steps.sync.outputs.conflict == 'true'
