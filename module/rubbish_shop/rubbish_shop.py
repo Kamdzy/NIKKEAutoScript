@@ -19,6 +19,21 @@ class RubbishShop(ShopBase):
     def assets(self) -> dict:
         return exec_file('./module/rubbish_shop/assets.py')
 
+    # Kamdzy - skip empty/unmapped priority entries so an unconfigured priority
+    # (default RUBBISH_SHOP_BONE_PRIORITY = "") or a typo doesn't blow up in
+    # Product.__init__ with "unsupported operand type(s) for -: 'NoneType' and 'int'".
+    def _build_priority(self, priority: str, product_map: dict) -> SelectedGrids:
+        parts = [p for p in re.sub(r'\s+', '', priority or '').split('>') if p]
+        products = []
+        for name in parts:
+            count = product_map.get(name)
+            button = self.assets.get(name)
+            if count is None or button is None:
+                logger.warning(f'Skipping unknown rubbish-shop product: {name!r}')
+                continue
+            products.append(Product(name, count, button))
+        return SelectedGrids(products)
+
     @cached_property
     def rubbish_shop_core_priority(self) -> SelectedGrids:
         """获取垃圾商店商品的优先级列表"""
@@ -26,10 +41,7 @@ class RubbishShop(ShopBase):
             priority = self.config.RUBBISH_SHOP_CORE_PRIORITY
         else:
             priority = self.config.RubbishShop_priority
-        priority = re.sub(r'\s+', '', priority).split('>')
-        return SelectedGrids(
-            [Product(i, self.config.RUBBISH_SHOP_CORE_PRODUCT.get(i), self.assets.get(i)) for i in priority]
-        )
+        return self._build_priority(priority, self.config.RUBBISH_SHOP_CORE_PRODUCT)
 
     @cached_property
     def rubbish_shop_bone_priority(self) -> SelectedGrids:
@@ -38,10 +50,7 @@ class RubbishShop(ShopBase):
             priority = self.config.RUBBISH_SHOP_BONE_PRIORITY
         else:
             priority = self.config.RubbishShop_bonePriority
-        priority = re.sub(r'\s+', '', priority).split('>')
-        return SelectedGrids(
-            [Product(i, self.config.RUBBISH_SHOP_BONE_PRODUCT.get(i), self.assets.get(i)) for i in priority]
-        )
+        return self._build_priority(priority, self.config.RUBBISH_SHOP_BONE_PRODUCT)
 
     @cached_property
     def broken_core(self) -> int:
