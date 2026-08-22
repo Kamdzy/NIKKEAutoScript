@@ -1,5 +1,21 @@
 # Announcement list; new announcements are appended to the top of the file
 # Kamdzy - translated to English for en-US NKAS fork
+- id: notice_20260822
+  date: 2026-08-22
+  title: Schedule settings (BETA)
+  type: info
+  content: |
+    <b>New Schedule Settings page — manage every task's run time and enabled state in one place</b>
+    Entry point: left task rail → Schedule settings (BETA).
+
+    <b>What it does</b>
+    Central view / editor for each task's schedule (daily / weekly / monthly), run time, and enabled toggle. Tick multiple tasks to batch-set their period and time; click a task name to jump straight to its settings page.
+
+    <b>Recommended usage</b>
+    Keep daily tasks on the same run time so they execute in priority order once the time hits. Splitting them across different times reorders execution and can miss reward windows; only add extra times for tasks you genuinely need to run multiple times per day.
+
+    <b>Notes</b>
+    This feature is in BETA; report any issues on <a href="https://github.com/megumiss/NIKKEAutoScript/issues" target="_blank">GitHub Issues</a>.
 - id: notice_20260819
   date: 2026-08-19
   title: LiPass auto-login for Cookie retrieval

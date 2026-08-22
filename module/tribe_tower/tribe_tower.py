@@ -263,4 +263,4 @@ class TribeTower(UI):
             self._run()
         except NoAvailableCompany:
             logger.warning('No tribe tower is unlocked yet; skipping task')
-        self.config.task_delay(server_update=True)
+        self.config.task_delay(schedule=True)
