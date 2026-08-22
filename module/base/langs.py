@@ -19,7 +19,16 @@ class LangMeta(type):
         # 派遣
         "FAVORITE_ITEM_NUM": {"en-US": "Owned", "zh-CN": "持有数", "ja-JP": ""},
         # mission pass
-        "PASS_MISSION_TAB": {"en-US": "Claim Reward", "zh-CN": "领取奖励", "ja-JP": ""},
+        # Kamdzy - en-US strings must match a WHOLE OCR fragment because the
+        # receive() loop calls appear_text(..., threshold=1) which requires
+        # 100% similarity. Substrings of longer captions fail. Verified via
+        # PaddleOCR probe on live client screenshots of both tabs.
+        #   Mission tab has an isolated bottom-caption line
+        #     "Complete Pass Mission for Pass Points."
+        #   Reward tab has an isolated section header "Common Rewards"
+        # The bare tab labels ("Reward"/"Mission") always appear in the tab
+        # bar regardless of which is selected, so they cannot discriminate.
+        "PASS_MISSION_TAB": {"en-US": "Complete Pass Mission for Pass Points.", "zh-CN": "领取奖励", "ja-JP": ""},
         "PASS_REWARD_TAB": {"en-US": "Common Rewards", "zh-CN": "普通奖励", "ja-JP": ""},
         "PASS_CHECK": {"en-US": "Purchase Pass", "zh-CN": "购买PASS", "ja-JP": ""},
         # 其他

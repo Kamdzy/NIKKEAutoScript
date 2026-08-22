@@ -20,15 +20,19 @@ class Liberation(UI):
                 click_timer.reset()
                 continue
 
+            # Kamdzy - static=True keeps the whole-button en-US templates from
+            # false-matching on transition splashes / page_main and clicking
+            # the Back/Home button at (100, 1244). Row positions are stable so
+            # a tight 5px offset around the stored area is enough.
             if click_timer.reached() and self.appear_then_click(
-                COMPLETED_1, offset=(30, 30), interval=1, threshold=0.8, static=False
+                COMPLETED_1, offset=(5, 5), interval=1, threshold=0.8, static=True
             ):
                 confirm_timer.reset()
                 click_timer.reset()
                 continue
 
             if click_timer.reached() and self.appear_then_click(
-                COMPLETED_2, offset=(30, 30), interval=1, threshold=0.8, static=False
+                COMPLETED_2, offset=(5, 5), interval=1, threshold=0.8, static=True
             ):
                 confirm_timer.reset()
                 click_timer.reset()
