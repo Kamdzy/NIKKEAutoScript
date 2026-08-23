@@ -9,6 +9,13 @@ from module.ui.page import page_tribe_tower
 from module.ui.ui import UI
 
 
+# Kamdzy - raised when the "Cannot proceed / no usage left" popup appears
+# because the squad has a friend-loan (temporarily participating) Nikke whose
+# uses are exhausted. Unrecoverable until the user swaps that Nikke in-game.
+class NoSquadUsageLeft(Exception):
+    pass
+
+
 class AutoTower(UI):
     company = []
 
@@ -63,12 +70,22 @@ class AutoTower(UI):
     def try_to_current_stage(self, skip_first_screenshot=True):
         logger.hr('CURRENT STAGE', 3)
         click_timer = Timer(0.3)
+        # Kamdzy - poll for the "Cannot proceed / no usage left" popup every
+        # ~20s. OCR is expensive (PaddleOCR ~5-20s per call) so we throttle
+        # heavily; the popup only fires after NEXT_STAGE and stays until we
+        # swap the loaned Nikke, so 20s is plenty of resolution.
+        usage_check_timer = Timer(20, count=3).start()
         try:
             while 1:
                 if skip_first_screenshot:
                     skip_first_screenshot = False
                 else:
                     self.device.screenshot()
+
+                if usage_check_timer.reached():
+                    usage_check_timer.reset()
+                    if self.appear_text('usage left', threshold=0.7):
+                        raise NoSquadUsageLeft
 
                 if click_timer.reached() and self.handle_paid_gift():
                     click_timer.reset()
@@ -119,6 +136,13 @@ class AutoTower(UI):
 
         except OperationFailed:
             logger.warning('failed to the current stage')
+            self.ensure_back()
+            return
+        except NoSquadUsageLeft:
+            logger.warning(
+                'Auto Tower cannot proceed: squad contains a temporarily-participating '
+                'Nikke with no usage left. Swap that Nikke in-game and restart Auto Tower.'
+            )
             self.ensure_back()
             return
 
