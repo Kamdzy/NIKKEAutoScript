@@ -40,7 +40,10 @@ class InfoHandler(ModuleBase):
         self._last_login_reward_check = current_time
 
         # Daily Login, Memories Spring, Monthly Card, etc.
-        reward = self.appear_text(Langs.CLAIM_ALL) or self.appear_text(Langs.CLAIM_REWARD)
+        # Kamdzy - threshold=0.85 stops "Claim" (single word on disabled Trail
+        # Marker etc. popups) from fuzzy-matching "Claim All"/"Claim Reward"
+        # at 0.71 similarity and locking us in an infinite click loop.
+        reward = self.appear_text(Langs.CLAIM_ALL, threshold=0.85) or self.appear_text(Langs.CLAIM_REWARD, threshold=0.85)
         if reward:
             # 重置限速机制，因为有奖励可领取
             self._last_login_reward_check = 0
