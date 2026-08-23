@@ -5,7 +5,12 @@ from module.base.template import Template
 # Don't modify it manually.
 
 CONNECT_TO_SYSTEM = Button(area={'zh-CN': (351, 652, 382, 667), 'en-US': (351, 652, 382, 667)}, color={'zh-CN': (168, 169, 170), 'en-US': (168, 169, 170)}, button={'zh-CN': (351, 652, 382, 667), 'en-US': (351, 652, 382, 667)}, file={'zh-CN': './assets/zh-CN/rookie_arena/CONNECT_TO_SYSTEM.png', 'en-US': './assets/zh-CN/rookie_arena/CONNECT_TO_SYSTEM.png'})
-END_COMPETITION = Button(area={'zh-CN': (45, 1194, 86, 1236), 'en-US': (45, 1194, 86, 1236)}, color={'zh-CN': (117, 116, 117), 'en-US': (117, 116, 117)}, button={'zh-CN': (45, 1194, 86, 1236), 'en-US': (45, 1194, 86, 1236)}, file={'zh-CN': './assets/zh-CN/rookie_arena/END_COMPETITION.png', 'en-US': './assets/zh-CN/rookie_arena/END_COMPETITION.png'})
+# Kamdzy - en-US Rookie Arena result screen ([WIN] / [LOSE]) has different
+# bottom-left iconography than zh-CN. Anchor on the "Tap to continue." caption
+# instead, which is present on both outcomes. Prior en-US inherited zh-CN area
+# (45, 1194) which sits in empty background on en-US and scored 0.291 — the
+# post-battle handler never fired, so NKAS re-fires Start_Competition instead.
+END_COMPETITION = Button(area={'zh-CN': (45, 1194, 86, 1236), 'en-US': (245, 1093, 475, 1125)}, color={'zh-CN': (117, 116, 117), 'en-US': (51, 83, 88)}, button={'zh-CN': (45, 1194, 86, 1236), 'en-US': (245, 1093, 475, 1125)}, file={'zh-CN': './assets/zh-CN/rookie_arena/END_COMPETITION.png', 'en-US': './assets/en-US/rookie_arena/END_COMPETITION.png'})
 FREE_OPPORTUNITY_CHECK = Button(area={'zh-CN': (580, 677, 619, 698), 'en-US': (578, 680, 622, 695)}, color={'zh-CN': (120, 195, 237), 'en-US': (126, 198, 236)}, button={'zh-CN': (580, 677, 619, 698), 'en-US': (578, 680, 622, 695)}, file={'zh-CN': './assets/zh-CN/rookie_arena/FREE_OPPORTUNITY_CHECK.png', 'en-US': './assets/en-US/rookie_arena/FREE_OPPORTUNITY_CHECK.png'})
 INTO_COMPETITION = Button(area={'zh-CN': (294, 1035, 421, 1064), 'en-US': (492, 1039, 578, 1062)}, color={'zh-CN': (130, 178, 219), 'en-US': (154, 192, 224)}, button={'zh-CN': (294, 1035, 421, 1064), 'en-US': (492, 1039, 578, 1062)}, file={'zh-CN': './assets/zh-CN/rookie_arena/INTO_COMPETITION.png', 'en-US': './assets/en-US/rookie_arena/INTO_COMPETITION.png'})
 NEXT_SEASON = Button(area={'zh-CN': (146, 588, 212, 603), 'en-US': (157, 591, 250, 600)}, color={'zh-CN': (48, 55, 58), 'en-US': (48, 69, 109)}, button={'zh-CN': (146, 588, 212, 603), 'en-US': (157, 591, 250, 600)}, file={'zh-CN': './assets/zh-CN/rookie_arena/NEXT_SEASON.png', 'en-US': './assets/en-US/rookie_arena/NEXT_SEASON.png'})
