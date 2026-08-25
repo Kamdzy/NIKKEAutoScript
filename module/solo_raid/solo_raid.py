@@ -66,6 +66,9 @@ class SoloRaid(SoloRaidChallenge):
     def solo_raid(self, skip_first_screenshot=True):
         """普通模式战斗/扫荡"""
         logger.hr('Start a solo raid (Normal)')
+        # Kamdzy - normal mode needs the same team rotation challenge mode has;
+        # see the 开始战斗 branch below.
+        team_change_timer = Timer(2, count=3).start()
 
         while 1:
             if skip_first_screenshot:
@@ -109,9 +112,41 @@ class SoloRaid(SoloRaidChallenge):
             ):
                 continue
 
-            # 开始战斗
-            if self.appear(FIGHT_HISTORY, offset=10) and self.appear_then_click(ENTER_FIGHT, offset=10, interval=1):
-                continue
+            # 开始战斗 / 选择队伍
+            # Kamdzy - Solo Raid forbids reusing a Nikke across attempts, so after
+            # the first fight every member of Team 1 shows "Invalid" and Start
+            # Battle greys out. The old single check used appear(ENTER_FIGHT,
+            # offset=10) which is a TEMPLATE match — it still matches the greyed
+            # button, so NKAS clicked a dead button forever. Mirror the rotation
+            # already present in challenge.py::challenge_raid: gate the click on a
+            # COLOR match (threshold=10, no offset) so it only fires while the
+            # button is actually enabled, otherwise advance to the next team set.
+            if self.appear(FIGHT_HISTORY, offset=10):
+                if self.appear(ENTER_FIGHT, offset=10) and self.appear_then_click(
+                    ENTER_FIGHT, threshold=10, interval=1
+                ):
+                    team_change_timer.reset()
+                    continue
+
+                if team_change_timer.reached():
+                    current_team = -1
+                    for i, team in enumerate(self.teams):
+                        if not self.appear(team, threshold=10):
+                            current_team = i
+                            break
+
+                    if current_team != -1:
+                        if current_team < 4:
+                            logger.info(f'Team {current_team + 1} is not valid, switch to Team {current_team + 2}')
+                            self.device.click(self.teams[current_team + 1])
+                            self.device.sleep(0.5)
+                            team_change_timer.reset()
+                            continue
+                        else:
+                            logger.warning('No valid team found')
+                            break
+            else:
+                team_change_timer.reset()
 
             # 自动射击和爆裂
             if self.appear_then_click(AUTO_SHOOT, offset=10, threshold=0.9, interval=5):
