@@ -35,6 +35,20 @@ export const staticLabels: Record<string, Record<string, string>> = {
   '待机': { 'en-US': 'Standby', 'ja-JP': '待機' },
   '已保存': { 'en-US': 'Saved', 'ja-JP': '保存しました' },
   '知道了': { 'en-US': 'Got it', 'ja-JP': '了解' }, '系统通知': { 'en-US': 'System notice', 'ja-JP': 'システム通知' },
+  // Kamdzy - these 11 keys are passed to the global t() but had no staticLabels
+  // entry, so t() fell through to its zh-CN source string and the en-US client
+  // showed Chinese (e.g. the "source update" confirm modal and its 确认 title).
+  '确认': { 'en-US': 'Confirm', 'ja-JP': '確認' },
+  '菜单': { 'en-US': 'Menu', 'ja-JP': 'メニュー' },
+  '任务列表': { 'en-US': 'Task list', 'ja-JP': 'タスク一覧' },
+  '收起任务列表': { 'en-US': 'Collapse task list', 'ja-JP': 'タスク一覧を閉じる' },
+  '启动器更新完成': { 'en-US': 'Launcher update complete', 'ja-JP': 'ランチャーの更新が完了しました' },
+  '更新源码将等待当前任务执行完毕后再进行，期间请勿启动新任务，确定继续？': { 'en-US': 'The source update will wait until the current task finishes. Do not start new tasks in the meantime. Continue?', 'ja-JP': 'ソースコードの更新は現在のタスクの完了後に実行されます。その間は新しいタスクを開始しないでください。続行しますか？' },
+  '强制重启将中断正在运行的任务，确定继续？': { 'en-US': 'A forced restart will interrupt running tasks. Continue?', 'ja-JP': '強制再起動は実行中のタスクを中断します。続行しますか？' },
+  '更新超时，请手动刷新页面': { 'en-US': 'Update timed out, please refresh the page manually', 'ja-JP': '更新がタイムアウトしました。手動でページを再読み込みしてください' },
+  '已完成': { 'en-US': 'Completed', 'ja-JP': '完了' },
+  '操作失败': { 'en-US': 'Operation failed', 'ja-JP': '操作に失敗しました' },
+  '查询失败': { 'en-US': 'Query failed', 'ja-JP': 'クエリに失敗しました' },
   '管理员权限不足': { 'en-US': 'Administrator privileges required', 'ja-JP': '管理者権限が必要です' },
   'PC 客户端需要脚本以管理员权限运行。请退出程序，右键启动程序或快捷方式，在「属性 → 兼容性」中勾选「以管理员身份运行此程序」，然后重新启动。': { 'en-US': 'The PC client requires the script to run with administrator privileges. Exit the program, right-click the launcher or shortcut, tick "Run this program as an administrator" under Properties → Compatibility, then start it again.', 'ja-JP': 'PCクライアントの利用には管理者権限が必要です。プログラムを終了し、起動プログラムまたはショートカットを右クリックして、「プロパティ → 互換性」で「管理者としてこのプログラムを実行する」にチェックを入れてから再起動してください。' },
   '公告中心': { 'en-US': 'Announcements', 'ja-JP': 'お知らせ' }, '暂无公告': { 'en-US': 'No announcements', 'ja-JP': 'お知らせはありません' }, '未读': { 'en-US': 'Unread', 'ja-JP': '未読' }, '我知道了': { 'en-US': 'Got it', 'ja-JP': 'わかりました' },
