@@ -1,5 +1,34 @@
 # Announcement list; new announcements are appended to the top of the file
 # Kamdzy - translated to English for en-US NKAS fork
+- id: notice_20260829
+  date: 2026-08-29
+  title: Physical device (Android phone) support
+  type: info
+  content: |
+    <b>NKAS now supports running against a physical device</b>
+    Two setups are supported: NKAS on PC + game on a physical Android device, and NKAS on a physical Android device + game on a physical Android device.
+    Thanks to community member @不会起名字 for the substantial help.
+
+    <b style="color:#e5484d;">⚠️ Risk warning: there have already been cases of temporary bans when using a physical device, cause unknown. Use it at your own risk.</b>
+
+    For setup instructions see the guide: <a href="https://nkas.megumiss.top/wiki/#/zh-cn/Usage-Guide-Physical-Device" target="_blank">https://nkas.megumiss.top/wiki/#/zh-cn/Usage-Guide-Physical-Device</a>
+- id: notice_20260828
+  date: 2026-08-28
+  title: "New option for 1080p screens: VDD virtual display"
+  type: info
+  content: |
+    <b>1080p users no longer need "Rotate screen" — running the script on a VDD virtual display is now recommended</b>
+    Virtual Display Driver creates a 1080x1920 virtual screen on your system. The game window runs in portrait on that virtual screen, your main display is completely unaffected, and the virtual screen can be switched off automatically when the script finishes.
+
+    <b>Driver download</b>
+    <a href="https://github.com/VirtualDrivers/Virtual-Display-Driver/releases" target="_blank">Virtual Display Driver GitHub Releases</a>
+    Installing the setup package directly is recommended: Virtual.Display.Driver-vxx.xx.xx-setup-x64.exe
+
+    <b>How to use</b>
+    1. After installing the driver, open Windows display settings, select the new screen that appears, and set its resolution to 1920x1080 in portrait orientation.
+    2. In NKAS go to PC client settings, enable "Multi-screen mode", click "Start virtual display", then pick the virtual screen under "Target screen for the game window".
+    3. Tick "Is a VDD virtual display" and "Auto-manage VDD display" — the virtual screen is then enabled when a task starts and disabled when it finishes.
+    4. The "Rotate screen" option previously needed for 1080p can now be turned off.
 - id: notice_20260822
   date: 2026-08-22
   title: Schedule settings (BETA)

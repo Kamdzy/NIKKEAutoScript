@@ -119,7 +119,7 @@ class Conversation(UI):
                 self.device.sleep(0.5)
                 tmp_image = self.device.image
                 logger.info('Click %s @ %s' % (point2str(690, 560), 'NEXT_NIKKE'))
-                self.device.click_minitouch(690, 560)
+                self.device.click_xy(690, 560)
                 # 比较头像是否变化
                 confirm_timer = Timer(3, count=3).start()
                 while 1:
@@ -135,7 +135,7 @@ class Conversation(UI):
                         break
                     if confirm_timer.reached():
                         logger.info('Click %s @ %s' % (point2str(690, 560), 'NEXT_NIKKE'))
-                        self.device.click_minitouch(690, 560)
+                        self.device.click_xy(690, 560)
                         confirm_timer.reset()
             else:
                 self._confirm_timer.reset()
@@ -187,7 +187,9 @@ class Conversation(UI):
                             f'Advise (favourite mode): {len(closed_ys)} CASE CLOSED, {len(r)} eligible favourite(s)'
                         )
                         if r:
-                            self.device.click_minitouch(*find_center(r[0]))
+                            # Kamdzy - click_xy (not click_minitouch) so upstream's
+                            # physical-device control routing applies.
+                            self.device.click_xy(*find_center(r[0]))
                             self.device.sleep(3.5)
                         else:
                             raise ConversationFavouriteDone
@@ -198,7 +200,9 @@ class Conversation(UI):
                         logger.info(f'Advise list: {len(closed_ys)} CASE CLOSED, {len(eligible)} eligible row(s)')
                         if eligible:
                             target_y = eligible[0]
-                            self.device.click_minitouch(ROW_X, target_y)
+                            # Kamdzy - click_xy (not click_minitouch) so upstream's
+                            # physical-device control routing applies.
+                            self.device.click_xy(ROW_X, target_y)
                             logger.info(f'Click ({ROW_X},{target_y}) @ NIKKE_ROW')
                             # Kamdzy - was 2s; en-US paints a ~2.5s blue-tint transition after the
                             # click during which DETAIL_CHECK fails and OPPORTUNITY OCR reads 0.
@@ -240,7 +244,7 @@ class Conversation(UI):
             # 咨询
             if (
                 click_timer.reached()
-                and COMMUNICATE.match_appear_on(self.device.image, threshold=6)
+                and COMMUNICATE.match_appear_on(self.device.image, threshold=10)
                 and self.appear_then_click(COMMUNICATE, offset=5, interval=3)
             ):
                 confirm_timer.reset()
@@ -249,7 +253,7 @@ class Conversation(UI):
             # 咨询确认
             if self.appear(CONFIRM_B, offset=(5, 5), static=False):
                 x, y = CONFIRM_B.location
-                self.device.click_minitouch(x - 75, y)
+                self.device.click_xy(x - 75, y)
                 confirm_timer.reset()
                 click_timer.reset()
                 continue
@@ -257,7 +261,7 @@ class Conversation(UI):
             if self.appear(ANSWER_CHECK, offset=1, threshold=0.9, static=False):
                 self.answer(nikke)
             elif (
-                not COMMUNICATE.match_appear_on(self.device.image, threshold=6)
+                not COMMUNICATE.match_appear_on(self.device.image, threshold=10)
                 and self.appear(DETAIL_CHECK, offset=(5, 5), static=False)
                 and GIFT.match_appear_on(self.device.image, threshold=10)
                 and confirm_timer.reached()
@@ -265,13 +269,13 @@ class Conversation(UI):
                 return self.communicate()
             # 点击对话
             if self.appear(AUTO_CLICK_CHECK, offset=(30, 30), interval=0.3):
-                self.device.click_minitouch(100, 100)
+                self.device.click_xy(100, 100)
                 logger.info('Click %s @ %s' % (point2str(100, 100), 'WAIT_TO_ANSWER'))
                 click_timer.reset()
                 continue
 
             if click_timer.reached() and not GIFT.match_appear_on(self.device.image, threshold=10):
-                self.device.click_minitouch(100, 100)
+                self.device.click_xy(100, 100)
                 click_timer.reset()
                 continue
 
@@ -333,7 +337,7 @@ class Conversation(UI):
                         continue
                     # 点击对话
                     if self.appear(AUTO_CLICK_CHECK, offset=(30, 30), interval=0.3):
-                        self.device.click_minitouch(100, 100)
+                        self.device.click_xy(100, 100)
                         logger.info('Click %s @ %s' % (point2str(100, 100), 'WAIT_TO_ANSWER'))
                         click_timer.reset()
                         continue
