@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import re
 import sys
 from pathlib import Path
@@ -152,6 +153,32 @@ def _save_order(order):
     _save_meta(meta)
 
 
+def _load_avatar(name):
+    """Avatar file name of an instance from instance_meta.json. Returns None
+    when the instance has no avatar entry at all (caller should assign one),
+    '' when the user explicitly cleared it (keep the placeholder)."""
+    entry = _load_meta().get(str(name))
+    if isinstance(entry, dict) and 'avatar' in entry:
+        return str(entry.get('avatar') or '')
+    return None
+
+
+def _save_avatar(name, avatar):
+    """Persist an avatar file name for an instance in instance_meta.json.
+    An empty avatar keeps the key so it reads back as '' (explicitly
+    cleared) instead of None (never assigned)."""
+    meta = _load_meta()
+    name = str(name)
+    entry = meta.get(name)
+    if not isinstance(entry, dict):
+        entry = {}
+        meta[name] = entry
+    entry['avatar'] = str(avatar) if avatar else ''
+    for key in [key for key, item in meta.items() if isinstance(item, dict) and not item]:
+        del meta[key]
+    _save_meta(meta)
+
+
 def ordered_instances():
     """Instances ordered by the saved manual order; unknown or new instances
     are appended at the end in their filesystem enumeration order."""
@@ -163,9 +190,28 @@ def ordered_instances():
     return ranked
 
 
+# Avatar pool scanned from the GUI asset directory; used to auto-assign an
+# avatar to existing instances that do not have one yet. Served back to the
+# SPA via Mount('/avatars') in app.py.
+AVATAR_DIR = './assets/gui/avatars'
+
+
+def _avatar_pool():
+    try:
+        return sorted(f for f in os.listdir(AVATAR_DIR) if f.endswith('.webp'))
+    except OSError:
+        return []
+
+
+async def avatar_list(_: Request):
+    """File names of every available avatar, for the avatar picker."""
+    return JSONResponse(_avatar_pool())
+
+
 async def instances(_: Request):
     result = []
     remarks = _load_remarks()
+    pool = _avatar_pool()
     for name in ordered_instances():
         manager = ProcessManager.get_manager(name)
         current_task = next_task = None
@@ -182,7 +228,15 @@ async def instances(_: Request):
                 next_task = queue['waiting'][0]['name_i18n']
         except (AttributeError, OSError, KeyError) as exc:
             logger.warning(f'Unable to read queue for {name}: {exc}')
-        result.append(InstanceInfo(name, manager.state, get_config_mod(name), current_task, next_task, remarks.get(name, '')).dict())
+        # Per-instance avatar file name lives in data/instance_meta.json,
+        # outside the game config, so template-driven config rebuilds can
+        # never drop it. Instances never assigned one get a random avatar
+        # picked once and saved; '' (explicitly cleared) stays a placeholder.
+        avatar = _load_avatar(name)
+        if avatar is None:
+            avatar = random.choice(pool) if pool else ''
+            _save_avatar(name, avatar)
+        result.append(InstanceInfo(name, manager.state, get_config_mod(name), current_task, next_task, remarks.get(name, ''), avatar).dict())
     return JSONResponse(result)
 
 
@@ -203,6 +257,22 @@ async def remark(request: Request):
         remarks.pop(name, None)
     _save_remarks(remarks)
     return JSONResponse({'status': 'success', 'remark': text})
+
+
+async def set_avatar(request: Request):
+    """Update the avatar file name of an instance in instance_meta.json
+    (empty clears it back to the text placeholder)."""
+    name = request.path_params['name']
+    try:
+        validate_instance(name)
+        data = await request.json()
+        avatar = str(data.get('avatar', '') or '').strip()
+    except InstanceNotFound as exc:
+        return _response_error(str(exc), 404)
+    except (ValueError, TypeError):
+        return _response_error('Expected JSON body with avatar.')
+    _save_avatar(name, avatar)
+    return JSONResponse({'status': 'success', 'avatar': avatar})
 
 
 def _clear_serial_failed(name):
@@ -293,6 +363,7 @@ async def create(request: Request):
         data = await request.json()
         name = str(data['name']).strip()
         origin = str(data.get('origin', 'template-nkas'))
+        avatar = str(data.get('avatar', '') or '').strip()
     except (ValueError, TypeError, KeyError):
         return _response_error('Expected JSON body with name and optional origin.')
     if not name or name in nkas_instance() or re.search(r'[.\\/:*?"\'<>|]', name) or name.lower().startswith('template'):
@@ -300,6 +371,8 @@ async def create(request: Request):
     if origin not in nkas_instance() + nkas_template():
         return _response_error('Source instance not found.', 404)
     State.config_updater.write_file(name, load_config(origin).read_file(origin), get_config_mod(origin))
+    if avatar:
+        _save_avatar(name, avatar)
     return JSONResponse({'status': 'success', 'name': name}, status_code=201)
 
 
@@ -336,6 +409,10 @@ async def delete(request: Request):
     acc = Path(_get_account_file(name))
     if acc.exists():
         acc.unlink()
+    # Drop the whole metadata entry (remark, order, avatar) at once.
+    meta = _load_meta()
+    if meta.pop(name, None) is not None:
+        _save_meta(meta)
     remarks = _load_remarks()
     if remarks.pop(name, None) is not None:
         _save_remarks(remarks)
@@ -425,6 +502,11 @@ async def rename(request: Request):
             # abort the rename half-way.
             logger.warning(f'Unable to migrate account file {old_acc}: {exc}')
     _migrate_instance_assets(name, new_name)
+    # Move the whole metadata entry (remark, order, avatar) to the new name.
+    meta = _load_meta()
+    if name in meta:
+        meta[new_name] = meta.pop(name)
+        _save_meta(meta)
     remarks = _load_remarks()
     if name in remarks:
         remarks[new_name] = remarks.pop(name)
