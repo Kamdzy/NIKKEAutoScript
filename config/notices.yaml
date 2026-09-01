@@ -1,5 +1,27 @@
 # Announcement list; new announcements are appended to the top of the file
 # Kamdzy - translated to English for en-US NKAS fork
+- id: notice_202609012
+  date: 2026-09-01
+  title: 'PC client: new "Control scheme" option adds background control'
+  type: info
+  content: |
+    <b>The PC client can now control the game window in the background</b>
+    A new "Control scheme" option is available in PC Client settings, with two modes:
+    - <b>pyautogui (foreground mode)</b>: the default. Simulates physical mouse input; clicks, scrolls and swipes take over the real mouse.
+    - <b>postmessage (background mode)</b>: clicks, scrolls and swipes are delivered via window messages. The game window is not brought to the front and does not steal focus.
+
+    <b>How to use</b>
+    1. Go to NKAS → PC Client settings, set Screenshot method to PrintWindow and Control scheme to postmessage.
+    2. The mouse cursor may briefly move during operations — this is expected.
+    3. The launcher still relies on foreground operation and is not affected by the control scheme.
+
+    <b>Known issues</b>
+    Swipe-related:
+    1. Simulation Room overclock cannot reroll traits.
+    2. Any shop that involves scrolling may skip items.
+    3. Dispatch keepsake switching does not select correctly.
+    Other:
+    1. Collab minigames depend on keyboard input and only work in foreground mode.
 - id: notice_20260829
   date: 2026-08-29
   title: Physical device (Android phone) support
