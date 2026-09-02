@@ -80,9 +80,13 @@ Deploy:
     # [Default] 03:50
     AutoRestartTime: 03:50
     # Desktop shell update manifest. The desktop version is independent from the project release tag.
-    # [Default] Use 'https://nkas.megumiss.top/releases/latest/nkas-desktop.json', hosted on the official VPS (faster for CN users)
-    # [Other] Use 'https://github.com/Kamdzy/NIKKEAutoScript/releases/latest/download/nkas-desktop.json' to update from GitHub Release
-    DesktopUpdateManifest: https://nkas.megumiss.top/releases/latest/nkas-desktop.json
+    # Kamdzy - defaults to the Kamdzy release channel so the launcher pulls the
+    # exe built alongside our source tree; keeps the desktop-shell channel and
+    # the code channel on the same fork instead of mixing Kamdzy source with an
+    # upstream-built shell.
+    # [Default] Use 'https://github.com/Kamdzy/NIKKEAutoScript/releases/latest/download/nkas-desktop.json', built by our build.yml
+    # [Upstream VPS] Use 'https://nkas.megumiss.top/releases/latest/nkas-desktop.json', hosted on the official VPS (faster for CN users, tracks upstream releases)
+    DesktopUpdateManifest: https://github.com/Kamdzy/NIKKEAutoScript/releases/latest/download/nkas-desktop.json
 
   Webui:
     # --host. Host to listen
