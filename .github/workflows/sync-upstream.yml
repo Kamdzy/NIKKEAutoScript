@@ -68,10 +68,39 @@ jobs:
       # it up.
       - name: Retag new upstream releases as Kamdzy variants
         if: steps.sync.outputs.conflict == 'false'
+        env:
+          # Kamdzy - push the new tag with a PAT (secret KAMDZY_RELEASE_PAT)
+          # rather than the workflow's default GITHUB_TOKEN. GitHub Actions
+          # deliberately does not fire `push: tags` triggers on refs pushed
+          # by GITHUB_TOKEN — otherwise a workflow could loop by pushing tags
+          # that re-run itself. So a GITHUB_TOKEN tag push here creates the
+          # tag on origin but silently does not trigger build.yml. Using a
+          # PAT sidesteps that; the tag push looks like a normal user push
+          # and build.yml runs end-to-end without a follow-up dispatch.
+          #
+          # Secret setup: create a fine-grained PAT scoped to this repo with
+          # `Contents: write` and `Metadata: read`, then Settings → Secrets
+          # and variables → Actions → New repository secret named
+          # KAMDZY_RELEASE_PAT. If the secret is missing this step still runs
+          # but the tag push falls through to the default GITHUB_TOKEN, which
+          # cuts the tag without firing build.yml — no data loss, just no
+          # auto-build until the secret is added.
+          KAMDZY_RELEASE_PAT: ${{ secrets.KAMDZY_RELEASE_PAT }}
         run: |
           set -euo pipefail
           # Ensure we have all of origin's tags to compare against
           git fetch origin --tags --force
+
+          # Reconfigure origin to push tags with the PAT if available. Master
+          # was already pushed above by the prior step using GITHUB_TOKEN;
+          # only the tag push here needs the elevated credential.
+          if [ -n "${KAMDZY_RELEASE_PAT:-}" ]; then
+            git remote set-url origin \
+              "https://x-access-token:${KAMDZY_RELEASE_PAT}@github.com/${GITHUB_REPOSITORY}"
+            echo "tag-push credential: KAMDZY_RELEASE_PAT (will trigger build.yml)"
+          else
+            echo "tag-push credential: GITHUB_TOKEN fallback (build.yml will NOT auto-trigger)"
+          fi
 
           # Iterate every semver-shaped upstream tag known locally. `|| true`
           # keeps `set -e` from tripping when grep finds nothing (e.g. a fresh

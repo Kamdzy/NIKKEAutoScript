@@ -304,12 +304,17 @@ jobs:
     # ==========================
     # 9. 发布
     # ==========================
+    # Kamdzy - auto-publish (was draft: true upstream). Every Kamdzy release
+    # is built from a *-kamdzy.N tag that sync-upstream.yml cuts on a merge
+    # HEAD carrying our patches, and both 7z variants ship a Kamdzy-pointing
+    # deploy.yaml. There is no failure mode left where we'd want the operator
+    # to manually gate the publish — the retag flow is the gate.
     - name: Create Release and Upload
       uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844  # v1
       with:
         tag_name: ${{ env.TAG_NAME }}
         name: NKAS ${{ env.TAG_NAME }}
-        draft: true
+        draft: false
         generate_release_notes: true
         body: ${{ inputs.release_note }}
         files: |
