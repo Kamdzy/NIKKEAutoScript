@@ -1,10 +1,15 @@
 Deploy:
   Git:
     # URL of NikkeAutoScript repository
-    # [CN user] Use 'https://git.megumiss.top/megumiss/NIKKEAutoScript' for faster and more stable download
-    # [Gitee] Use 'https://gitee.com/megumiss/NIKKEAutoScript', may require login
-    # [Other] Use 'https://github.com/Kamdzy/NIKKEAutoScript'
-    Repository: https://git.megumiss.top/megumiss/NIKKEAutoScript
+    # Kamdzy - defaults to the Kamdzy fork so a Full-CN 7z downloaded from
+    # the Kamdzy Releases page keeps its en-US patches on first `git pull`.
+    # Shipping the upstream CN mirror as the default would silently wipe every
+    # Kamdzy patch the launcher pulled — same failure mode the tag-sync fix in
+    # .github/workflows/sync-upstream.yml exists to prevent.
+    # [Default] Use 'https://github.com/Kamdzy/NIKKEAutoScript', the Kamdzy fork
+    # [CN mirror of upstream] Use 'https://git.megumiss.top/megumiss/NIKKEAutoScript' for faster and more stable download (reverts to upstream, no Kamdzy patches)
+    # [Gitee mirror of upstream] Use 'https://gitee.com/megumiss/NIKKEAutoScript', may require login (reverts to upstream)
+    Repository: https://github.com/Kamdzy/NIKKEAutoScript
     # Branch of NKAS
     # [Developer] Use 'dev', 'app', etc, to try new features
     # [Other] Use 'master', the stable branch

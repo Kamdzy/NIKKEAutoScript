@@ -44,10 +44,66 @@ jobs:
         if: steps.sync.outputs.conflict == 'false'
         run: |
           git push origin master
-          # Kamdzy - propagate any new upstream tags so build.yml fires on Kamdzy
-          # for the same release version megumiss just published. Existing tags
-          # are not overwritten (no --force), so a Kamdzy-only re-tag is safe.
-          git push origin --tags
+
+      # Kamdzy - retag upstream releases at our merge HEAD, not verbatim.
+      #
+      # An upstream release tag (e.g. v1.1.0) points at upstream's version-bump
+      # commit, which by construction predates every Kamdzy merge and contains
+      # zero Kamdzy patches in its tree. The old sync step ran `git push origin
+      # --tags`, which propagated those upstream tags verbatim to Kamdzy — and
+      # every release the fork has shipped (v1.0.3..v1.0.5) turned out to be an
+      # upstream-clean 7z under a Kamdzy label. Users downloading from the
+      # Kamdzy Releases page got zero en-US patches.
+      #
+      # The fix: for each upstream vX.Y.Z tag that has never been mirrored to
+      # Kamdzy in any form (neither the raw name nor a -kamdzy.N variant), cut
+      # a Kamdzy-suffixed tag on the CURRENT HEAD (the sync merge commit, which
+      # includes both upstream's release commit and all Kamdzy patches merged
+      # on top). Historical raw tags on origin are left alone — that ship
+      # already sailed and rewriting them would surprise anyone who fetched.
+      #
+      # `git push origin --tags` is deliberately gone. The only thing this step
+      # pushes is the Kamdzy-suffixed tag it just created — the raw upstream
+      # tag stays local, and never lands on Kamdzy where build.yml would pick
+      # it up.
+      - name: Retag new upstream releases as Kamdzy variants
+        if: steps.sync.outputs.conflict == 'false'
+        run: |
+          set -euo pipefail
+          # Ensure we have all of origin's tags to compare against
+          git fetch origin --tags --force
+
+          # Iterate every semver-shaped upstream tag known locally. `|| true`
+          # keeps `set -e` from tripping when grep finds nothing (e.g. a fresh
+          # fork with no v* tags yet).
+          tags=$(git tag -l 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true)
+          for tag in $tags; do
+            # Does the tagged upstream commit belong to our merged history?
+            # If not, we can't cut a Kamdzy variant on HEAD that would contain
+            # it. Skip until a future sync merges the range.
+            commit=$(git rev-parse "$tag^{commit}")
+            if ! git merge-base --is-ancestor "$commit" HEAD; then
+              echo "skip $tag: upstream commit $commit is not yet merged"
+              continue
+            fi
+
+            # Has origin already shipped this version in any form?
+            # - raw name (historical, pre-fix) -> leave alone
+            # - any -kamdzy.N variant           -> already handled
+            if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+              echo "skip $tag: origin already has the raw tag (historical release)"
+              continue
+            fi
+            if git ls-remote --tags origin "refs/tags/${tag}-kamdzy.*" | grep -q .; then
+              echo "skip $tag: origin already has a Kamdzy variant"
+              continue
+            fi
+
+            new_tag="${tag}-kamdzy.1"
+            echo "cutting $new_tag at $(git rev-parse HEAD) (upstream $tag was $commit)"
+            git tag -a "$new_tag" -m "Kamdzy release built from upstream $tag on merge commit $(git rev-parse --short HEAD)"
+            git push origin "refs/tags/$new_tag"
+          done
 
       - name: Send Discord notification on conflict
         if: failure() && steps.sync.outputs.conflict == 'true'
