@@ -1,5 +1,13 @@
 # Announcement list; new announcements are appended to the top of the file
 # Kamdzy - translated to English for en-US NKAS fork
+- id: notice_20260903
+  date: 2026-09-03
+  title: Background-mode swipe issues fixed
+  type: info
+  content: |
+    <b>Background-mode swipe issues have been fixed</b>
+    The swipe glitches under background control mode are resolved — Simulation Room overclock, shops, and dispatch keepsakes now work correctly.
+    On PC, collab minigames can only be controlled via the keyboard, so the game window is briefly brought to the foreground while they run.
 - id: notice_202609012
   date: 2026-09-01
   title: 'PC client: new "Control scheme" option adds background control'
@@ -21,7 +29,7 @@
     2. Any shop that involves scrolling may skip items.
     3. Dispatch keepsake switching does not select correctly.
     Other:
-    1. Collab minigames depend on keyboard input and only work in foreground mode.
+    1. Some scenarios that depend on DirectInput / Raw Input may not respond to background keyboard messages; foreground mode is still required in those cases.
 - id: notice_20260829
   date: 2026-08-29
   title: Physical device (Android phone) support
