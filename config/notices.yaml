@@ -37,6 +37,7 @@
   content: |
     <b>NKAS now supports running against a physical device</b>
     Two setups are supported: NKAS on PC + game on a physical Android device, and NKAS on a physical Android device + game on a physical Android device.
+    An APK is now available for quick installation of NKAS on Android; download it from the QQ group files.
     Thanks to community member @不会起名字 for the substantial help.
 
     <b style="color:#e5484d;">⚠️ Risk warning: there have already been cases of temporary bans when using a physical device, cause unknown. Use it at your own risk.</b>
