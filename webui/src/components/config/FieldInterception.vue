@@ -31,9 +31,13 @@ function drawCharts() {
   charts = []
   if (props.widget !== 'interception_stone_charts' || !chartRoot.value) return
   const series = props.data?.series || {}
-  const text3 = cssVar('--text-3', '#97a0af')
-  const border = cssVar('--border', '#262f3d')
-  const entries = [['daily', t('近 30 天'), '#66b8ea'], ['weekly', t('近 12 周'), '#55d9a2'], ['monthly', t('近 12 月'), '#ffc178']]
+  const text3 = cssVar('--text-3', '#a3a3a3')
+  const border = cssVar('--border', '#e5e5e5')
+  // Kamdzy - keep t() wrappers on the three chart legend labels so the en-US
+  // client renders "Last 30 days" / "Last 12 weeks" / "Last 12 months" instead
+  // of the raw zh-CN. Upstream dropped these in the color-palette refresh;
+  // reapplied on top of their new palette.
+  const entries = [['daily', t('近 30 天'), '#0099ff'], ['weekly', t('近 12 周'), '#22c55e'], ['monthly', t('近 12 月'), '#ff7a3d']]
   entries.forEach(([key, title, color], index) => {
     const element = chartRoot.value?.children[index] as HTMLElement | undefined
     if (!element) return
