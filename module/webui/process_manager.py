@@ -309,15 +309,31 @@ class ProcessManager:
         if config.Client_Platform != 'win':
             return
         if config.PCClient_ScreenRotate:
-            try:
-                from module.device.win.game_control import WinClient
-                WinClient.screen_rotate(config.PCClient_ScreenNumber)
-            except Exception as e:
-                logger.warning(f'Failed to restore screen orientation on stop: {e}')
-        if config.PCClient_VddScreen and config.PCClient_VddAutoManage:
+            # 实例进程被 kill，内存里回填的屏幕序号不会带过来；此刻 VDD 仍开着，
+            # 先按 VddType 重新解析一次，解析失败时不能用旧序号旋转实体屏
+            screen_n = config.PCClient_ScreenNumber
+            if config.Vdd_VddScreen:
+                try:
+                    from module.device.win.vdd import vdd_find_screen_n
+                    resolved = vdd_find_screen_n(config)
+                except Exception as e:
+                    resolved = None
+                    logger.warning(f'Failed to resolve VDD screen index on stop: {e}')
+                if resolved is not None:
+                    screen_n = resolved
+                else:
+                    screen_n = None
+                    logger.warning('VDD screen not resolved on stop; skipping screen orientation restoration')
+            if screen_n is not None:
+                try:
+                    from module.device.win.game_control import WinClient
+                    WinClient.screen_rotate(screen_n)
+                except Exception as e:
+                    logger.warning(f'Failed to restore screen orientation on stop: {e}')
+        if config.Vdd_VddScreen and config.Vdd_VddAutoManage:
             try:
                 from module.device.win.vdd import vdd_auto_stop
-                vdd_auto_stop()
+                vdd_auto_stop(config)
             except Exception as e:
                 logger.warning(f'Failed to disable VDD screen on stop: {e}')
 
@@ -467,13 +483,13 @@ class ProcessManager:
             if func == "nkas":
                 from main import NikkeAutoScript
 
-                if e is not None:
-                    NikkeAutoScript.stop_event = e
+                NikkeAutoScript.stop_event = e
                 NikkeAutoScript(config_name=config_name).loop()
             elif func in get_available_func():
                 from main import NikkeAutoScript
 
-                NikkeAutoScript(config_name=config_name).run(inflection.underscore(func), skip_first_screenshot=True)
+                NikkeAutoScript.stop_event = e
+                NikkeAutoScript(config_name=config_name).run_once(inflection.underscore(func), skip_first_screenshot=True)
             elif func in get_available_mod():
                 mod = load_mod(func)
 
@@ -487,6 +503,18 @@ class ProcessManager:
             logger.info(f"[{config_name}] exited. Reason: Finish\n")
         except Exception as e:
             logger.exception(e)
+        finally:
+            # 单次工具或初始化失败也可能持有句柄；退出时兜底清理，被 kill 时由系统回收。
+            if os.name == 'nt':
+                try:
+                    from module.device.win.virtual_mouse.driver_mouse import close_shared_mouse
+                    from module.device.win.virtual_mouse.input import release_scheme_mutex
+                    try:
+                        close_shared_mouse()
+                    finally:
+                        release_scheme_mutex()
+                except Exception as exc:
+                    logger.warning(f'Failed to release virtual mouse resources: {exc}')
 
     @classmethod
     def running_instances(cls) -> List["ProcessManager"]:

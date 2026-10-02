@@ -88,7 +88,8 @@
       "OnePushConfig": {
         "type": "textarea",
         "value": "provider: null",
-        "mode": "yaml"
+        "mode": "yaml",
+        "widget": "notify_channel"
       }
     },
     "Account": {
@@ -308,7 +309,16 @@
         "value": "pyautogui",
         "option": [
           "pyautogui",
-          "postmessage"
+          "postmessage",
+          "driver"
+        ]
+      },
+      "MoveBackend": {
+        "type": "select",
+        "value": "driver",
+        "option": [
+          "driver",
+          "cursor"
         ]
       }
     },
@@ -328,14 +338,6 @@
           4,
           5
         ]
-      },
-      "VddScreen": {
-        "type": "checkbox",
-        "value": false
-      },
-      "VddAutoManage": {
-        "type": "checkbox",
-        "value": false
       },
       "GameWindowPosition": {
         "type": "select",
@@ -365,6 +367,24 @@
       "DisableVoice": {
         "type": "checkbox",
         "value": false
+      }
+    },
+    "Vdd": {
+      "VddScreen": {
+        "type": "checkbox",
+        "value": false
+      },
+      "VddType": {
+        "type": "select",
+        "value": "parsecvdd",
+        "option": [
+          "parsecvdd",
+          "mttvdd"
+        ]
+      },
+      "VddAutoManage": {
+        "type": "checkbox",
+        "value": true
       }
     },
     "Storage": {
@@ -520,7 +540,7 @@
   "Reward": {
     "Scheduler": {
       "Enable": {
-        "type": "lock",
+        "type": "checkbox",
         "value": true,
         "option": [
           true,
@@ -2959,7 +2979,7 @@
         "type": "select",
         "value": "",
         "option": [
-          "event_20260813",
+          "event_20260917",
           "event_20260903"
         ],
         "display": "disabled"
@@ -3115,7 +3135,7 @@
         "type": "select",
         "value": "",
         "option": [
-          "event_20260813",
+          "event_20260917",
           "event_20260903"
         ],
         "display": "disabled"

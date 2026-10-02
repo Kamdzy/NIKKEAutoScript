@@ -50,13 +50,16 @@ class GeneratedConfig:
     # Group `PCClient`
     PCClient_Screens = False
     PCClient_ScreenNumber = 0  # 0, 1, 2, 3, 4, 5
-    PCClient_VddScreen = False
-    PCClient_VddAutoManage = False
     PCClient_GameWindowPosition = 'center'  # center, left, right, topleft, topright, bottomleft, bottomright
     PCClient_GameResolutionCompat = True
     PCClient_ScreenRotate = False
     PCClient_CloseAutoHdr = True
     PCClient_DisableVoice = False
+
+    # Group `Vdd`
+    Vdd_VddScreen = False
+    Vdd_VddType = 'parsecvdd'  # parsecvdd, mttvdd
+    Vdd_VddAutoManage = True
 
     # Group `PCClientInfo`
     PCClientInfo_Client = 'intl'  # intl, hmt
@@ -69,7 +72,8 @@ class GeneratedConfig:
     PCClientInfo_GameProcessName = None
     PCClientInfo_ScreenshotMethod = 'pyautogui'  # pyautogui, mss, PrintWindow
     PCClientInfo_ScreenshotInterval = 0.3
-    PCClientInfo_ControlScheme = 'pyautogui'  # pyautogui, postmessage
+    PCClientInfo_ControlScheme = 'pyautogui'  # pyautogui, postmessage, driver
+    PCClientInfo_MoveBackend = 'driver'  # driver, cursor
 
     # Group `Optimization`
     Optimization_AutoRedCircle = False
@@ -182,7 +186,7 @@ class GeneratedConfig:
     BlaExchange_Priority = 'Gem_×320 > Gem_×120 > Gem_×60 > Gem_×30 > Welcome_Gift_Core_Dust_×30'  # Gem_×320, Welcome_Gift_Core_Dust_×30, Gem_×30, Skill_Manual_I_×5, Ultra_Boost_Module_×5, Code_Manual_Selection_Box_×5, Gem_×60, Mid-Quality_Mold_×3, Credit_Case_(1H)_x9, Core_Dust_Case_(1H)_×3, Gem_×120, Mid-Quality_Mold_×8, Battle_Data_Set_Case_(1H)_×6, Core_Dust_Case_(1H)_×6, Skill_Manual_I_×30, Ultra_Boost_Module_×30, Code_Manual_Selection_Box_×30
 
     # Group `EventInfo`
-    EventInfo_Event = ''  # event_20260813, event_20260903
+    EventInfo_Event = ''  # event_20260917, event_20260903
     EventInfo_StoryPart = 'Story_1'  # Story_1, Story_2
     EventInfo_StoryDifficulty = 'Normal'  # Normal, Hard
 

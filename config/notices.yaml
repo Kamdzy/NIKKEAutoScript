@@ -1,5 +1,92 @@
 # Announcement list; new announcements are appended to the top of the file
+# pinned: true announcements are pinned to the top of the client list (several can be pinned at once); within that group the file order still applies (newest first)
 # Kamdzy - translated to English for en-US NKAS fork
+- id: notice_20260924
+  date: 2026-09-24
+  title: Star the project on GitHub
+  type: info
+  pinned: true
+  content: |
+    <b>If NKAS has helped you, please consider giving it a Star on GitHub</b>
+    <a href="https://github.com/megumiss/NIKKEAutoScript" target="_blank">https://github.com/megumiss/NIKKEAutoScript</a>
+    Your Stars are what keep me motivated to keep updating it.
+
+    For problems or feature requests, feel free to report them in <a href="https://github.com/megumiss/NIKKEAutoScript/issues" target="_blank">Issues</a>.
+- id: notice_20260923
+  date: 2026-09-23
+  title: OCR now supports GPU acceleration
+  type: info
+  content: |
+    <b>PaddleOCR now supports NVIDIA GPU acceleration</b>
+
+    <b>How to use</b>
+    1. Go to NKAS → Deploy and set OcrDevice to gpu;
+    2. Fully exit and reopen nkas.exe — the launcher switches the paddle package to the GPU build automatically (about 2–3 GB, please be patient);
+    3. Restarting from inside the web UI is not enough; the program must be fully exited and started again.
+
+    <b>Requirements</b>
+    An NVIDIA GPU with a driver supporting CUDA >= 11.8. The CUDA variant (PaddleCuda) defaults to auto-detection; RTX 50-series cards should use cu129, and cu126 / cu118 can also be set manually.
+
+    <b>Notes</b>
+    1. If you don't have an NVIDIA card or aren't sure, keep cpu — the default cpu works fine;
+    2. If GPU turns out to be unavailable after enabling it, the launcher stops before OCR initialises and tells you; switch back to cpu or reinstall the dependencies as instructed.
+- id: notice_20260918
+  date: 2026-09-18
+  title: New virtual mouse control scheme
+  type: info
+  pinned: true
+  content: |
+    <b>The PC client adds a driver control scheme — mouse input is sent at the driver level by a virtual mouse driver</b>
+    The game's anti-cheat has been upgraded and the previous control schemes, pyautogui and postmessage, are now blocked.
+    The new driver scheme only supports foreground operation; it cannot be used while the game window is not in the foreground.
+
+    <b>How to use</b>
+    1. Install the driver — either way works:
+    - Click Install under "Tools → Virtual mouse driver";
+    - Install the latest <a href="https://www.logitechg.com/en-us/software/ghub" target="_blank">GHUB</a>. If GHUB is already installed, check under "Tools → Virtual mouse driver" that the status shows "Installed".
+    2. Go to NKAS → PC Client → PC Client Settings and set "Mouse Control Scheme" to driver.
+
+    <b>FAQ</b>
+    1. Error "Virtual mouse driver move": first try changing "Mouse Move Method" to cursor. If that doesn't fix it, reinstall: uninstall the virtual mouse driver under Tools, restart the PC, then install it again.
+    2. Error "Driver installer ran but no device was detected afterwards": restart the PC, uninstall the virtual mouse driver, restart again, then reinstall the virtual mouse driver; or simply uninstall GHUB, restart, and reinstall GHUB.
+
+    <b style="color:var(--red)">Warning</b>
+    <span style="color:var(--red)">This scheme has not been widely tested and may still be detected by anti-cheat, leading to warnings or bans.</span>
+- id: notice_20260922
+  date: 2026-09-22
+  title: "New option for 1080p screens: VDD virtual display"
+  type: info
+  content: |
+    <b>1080p users no longer need "Rotate Screen" — running the script on a VDD virtual display is now recommended</b>
+    A virtual display driver creates a 1080x1920 virtual screen on your system. The game window runs in portrait on that virtual screen, your main display is completely unaffected, and the virtual screen can be switched off automatically when the task finishes.
+
+    <b>How to use (ParsecVDD, recommended)</b>
+    1. Install the official ParsecVDD driver: <a href="https://github.com/nomi-san/parsec-vdd/releases/download/v0.45.1/ParsecVDisplay-v0.45-setup.exe" target="_blank">ParsecVDisplay-v0.45-setup.exe</a>
+    2. Go to NKAS → PC Client → Virtual Display and turn on "Enable VDD Virtual Display" (this turns on Multi-Screen Mode automatically), then set "Virtual Display Type" to ParsecVDD;
+    3. Keep "Auto-Manage VDD Screen" on (the default): when a task starts, the virtual screen is created, corrected to 1080x1920 portrait and its screen number located automatically, and it is closed when the task ends — no need to set the resolution or target screen by hand.
+
+    <b>MttVDD (legacy option)</b>
+    1. Install the official MttVDD driver: <a href="https://github.com/VirtualDrivers/Virtual-Display-Driver/releases/download/25.5.2/Virtual.Display.Driver-v25.05.03-setup-x64.exe" target="_blank">Virtual.Display.Driver-v25.05.03-setup-x64.exe</a>
+    2. After installing the driver, open Windows display settings, select the new screen that appears, and set its resolution to 1920x1080 in portrait;
+    3. Set "Virtual Display Type" to MttVDD; everything else is the same as above.
+
+    <b>Notes</b>
+    - With "Enable VDD Virtual Display" on, "Game Window Target Screen" doesn't need to be chosen manually — the screen number is located when the task starts;
+    - The "Enable virtual display / Disable virtual display" buttons under manual VDD screen management are for testing whether the driver works, or for controlling the screen yourself when auto-management doesn't take effect; the "Virtual display driver status" next to them shows the driver installation and screen state;
+    - The "Rotate Screen" option previously enabled for 1080p can now be turned off.
+- id: notice_20260917
+  date: 2026-09-17
+  title: Random click-position offset added
+  type: info
+  content: |
+    <b>Regular button clicks now apply a random coordinate offset</b>
+    On by default, with a 5-pixel offset.
+
+    <b>Where to set it</b>
+    NKAS → Optimization Settings → Random click offset; enter a pixel value.
+
+    <b>Notes</b>
+    Some pages may not be clicked correctly in the current version; set "Random click offset" to 0 to disable the offset.
 - id: notice_20260903
   date: 2026-09-03
   title: Background-mode swipe issues fixed
@@ -40,26 +127,7 @@
     An APK is now available for quick installation of NKAS on Android; download it from the QQ group files.
     Thanks to community member @不会起名字 for the substantial help.
 
-    <b style="color:#e5484d;">⚠️ Risk warning: there have already been cases of temporary bans when using a physical device, cause unknown. Use it at your own risk.</b>
-
     For setup instructions see the guide: <a href="https://nkas.megumiss.top/wiki/#/zh-cn/Usage-Guide-Physical-Device" target="_blank">https://nkas.megumiss.top/wiki/#/zh-cn/Usage-Guide-Physical-Device</a>
-- id: notice_20260828
-  date: 2026-08-28
-  title: "New option for 1080p screens: VDD virtual display"
-  type: info
-  content: |
-    <b>1080p users no longer need "Rotate screen" — running the script on a VDD virtual display is now recommended</b>
-    Virtual Display Driver creates a 1080x1920 virtual screen on your system. The game window runs in portrait on that virtual screen, your main display is completely unaffected, and the virtual screen can be switched off automatically when the script finishes.
-
-    <b>Driver download</b>
-    <a href="https://github.com/VirtualDrivers/Virtual-Display-Driver/releases" target="_blank">Virtual Display Driver GitHub Releases</a>
-    Installing the setup package directly is recommended: Virtual.Display.Driver-vxx.xx.xx-setup-x64.exe
-
-    <b>How to use</b>
-    1. After installing the driver, open Windows display settings, select the new screen that appears, and set its resolution to 1920x1080 in portrait orientation.
-    2. In NKAS go to PC client settings, enable "Multi-screen mode", click "Start virtual display", then pick the virtual screen under "Target screen for the game window".
-    3. Tick "Is a VDD virtual display" and "Auto-manage VDD display" — the virtual screen is then enabled when a task starts and disabled when it finishes.
-    4. The "Rotate screen" option previously needed for 1080p can now be turned off.
 - id: notice_20260822
   date: 2026-08-22
   title: Schedule settings (BETA)
