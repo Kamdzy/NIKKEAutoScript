@@ -55,8 +55,8 @@ jobs:
       # upstream-clean 7z under a Kamdzy label. Users downloading from the
       # Kamdzy Releases page got zero en-US patches.
       #
-      # The fix: for each upstream vX.Y.Z tag that has never been mirrored to
-      # Kamdzy in any form (neither the raw name nor a -kamdzy.N variant), cut
+      # The fix: for the newest upstream vX.Y.Z tag newer than anything
+      # mirrored to Kamdzy in any form (raw name or a -kamdzy.N variant), cut
       # a Kamdzy-suffixed tag on the CURRENT HEAD (the sync merge commit, which
       # includes both upstream's release commit and all Kamdzy patches merged
       # on top). Historical raw tags on origin are left alone — that ship
@@ -102,71 +102,77 @@ jobs:
             echo "tag-push credential: GITHUB_TOKEN fallback (build.yml will NOT auto-trigger)"
           fi
 
-          # Iterate every semver-shaped upstream tag known locally. `|| true`
-          # keeps `set -e` from tripping when grep finds nothing (e.g. a fresh
-          # fork with no v* tags yet).
-          tags=$(git tag -l 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true)
-          for tag in $tags; do
-            # Does the tagged upstream commit belong to our merged history?
-            # If not, we can't cut a Kamdzy variant on HEAD that would contain
-            # it. Skip until a future sync merges the range.
-            commit=$(git rev-parse "$tag^{commit}")
-            if ! git merge-base --is-ancestor "$commit" HEAD; then
-              echo "skip $tag: upstream commit $commit is not yet merged"
-              continue
-            fi
+          # Kamdzy - cut ONE tag per sync: the newest merged upstream version
+          # newer than anything origin has shipped. Every Kamdzy tag is cut on
+          # the same HEAD, so when several upstream releases land between two
+          # successful syncs (e.g. a week of conflict failures), tagging each
+          # would build identical trees under different labels -- a release
+          # named v1.1.1-kamdzy.1 carrying 1.1.3 code, racing the real one for
+          # "Latest". Older versions are superseded, never cut later.
+          #
+          # Newest version origin has shipped, raw (historical) or -kamdzy.N.
+          shipped=$(git ls-remote --tags origin \
+            | sed -nE 's#.*refs/tags/(v[0-9]+\.[0-9]+\.[0-9]+)(-kamdzy\.[0-9]+)?$#\1#p' \
+            | sort -uV | tail -n1)
+          echo "newest version on origin: ${shipped:-none}"
 
-            # Has origin already shipped this version in any form?
-            # - raw name (historical, pre-fix) -> leave alone
-            # - any -kamdzy.N variant           -> already handled
-            if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
-              echo "skip $tag: origin already has the raw tag (historical release)"
-              continue
+          # Semver-shaped upstream tags whose commit is in our merged history
+          # and that are newer than $shipped. `|| true` keeps `set -e` from
+          # tripping when grep finds nothing.
+          candidates=()
+          for tag in $(git tag -l 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true); do
+            if ! git merge-base --is-ancestor "$(git rev-parse "$tag^{commit}")" HEAD; then
+              echo "skip $tag: upstream commit is not in our merged history"
+            elif [ -n "$shipped" ] && [ "$(printf '%s\n%s\n' "$tag" "$shipped" | sort -V | tail -n1)" = "$shipped" ]; then
+              echo "skip $tag: not newer than $shipped"
+            else
+              candidates+=("$tag")
             fi
-            if git ls-remote --tags origin "refs/tags/${tag}-kamdzy.*" | grep -q .; then
-              echo "skip $tag: origin already has a Kamdzy variant"
-              continue
-            fi
-
-            new_tag="${tag}-kamdzy.1"
-            echo "cutting $new_tag at $(git rev-parse HEAD) (upstream $tag was $commit)"
-            git tag -a "$new_tag" -m "Kamdzy release built from upstream $tag on merge commit $(git rev-parse --short HEAD)"
-            git push origin "refs/tags/$new_tag"
           done
 
+          if [ ${#candidates[@]} -eq 0 ]; then
+            echo "nothing to release"
+            exit 0
+          fi
+          tag=$(printf '%s\n' "${candidates[@]}" | sort -V | tail -n1)
+          if [ ${#candidates[@]} -gt 1 ]; then
+            echo "superseded, not cut: $(printf '%s\n' "${candidates[@]}" | grep -vx "$tag" | tr '\n' ' ')"
+          fi
+
+          new_tag="${tag}-kamdzy.1"
+          echo "cutting $new_tag at $(git rev-parse HEAD) (upstream $tag was $(git rev-parse "$tag^{commit}"))"
+          git tag -a "$new_tag" -m "Kamdzy release built from upstream $tag on merge commit $(git rev-parse --short HEAD)"
+          git push origin "refs/tags/$new_tag"
+
+      # Kamdzy - build the payload with jq and fail on HTTP errors. The old
+      # hand-quoted JSON pasted the multi-line commit list raw into a string,
+      # so Discord rejected every alert ("The request body contains invalid
+      # JSON.", code 50109) while plain curl exited 0 and the step stayed
+      # green -- a week of conflict failures (2026-09-25..10-02) went unnoticed.
       - name: Send Discord notification on conflict
         if: failure() && steps.sync.outputs.conflict == 'true'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -euo pipefail
           UPSTREAM_COMMITS=$(git log HEAD..upstream/master --oneline --no-decorate | head -5)
-          curl -H "Content-Type: application/json" \
-            -d "{
-              \"embeds\": [{
-                \"title\": \"⚠️ Fork Sync Conflict Detected\",
-                \"description\": \"Failed to automatically sync fork with upstream megumiss/NIKKEAutoScript due to merge conflicts.\",
-                \"color\": 15158332,
-                \"fields\": [
-                  {
-                    \"name\": \"Repository\",
-                    \"value\": \"[${{ github.repository }}](https://github.com/${{ github.repository }})\",
-                    \"inline\": true
-                  },
-                  {
-                    \"name\": \"Workflow Run\",
-                    \"value\": \"[View Details](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\",
-                    \"inline\": true
-                  },
-                  {
-                    \"name\": \"Action Required\",
-                    \"value\": \"Manual merge required. Please resolve conflicts locally and push to master.\",
-                    \"inline\": false
-                  },
-                  {
-                    \"name\": \"Recent Upstream Commits\",
-                    \"value\": \"\`\`\`\n${UPSTREAM_COMMITS}\n\`\`\`\",
-                    \"inline\": false
-                  }
-                ],
-                \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
-              }]
-            }" \
-            ${{ secrets.DISCORD_WEBHOOK_URL }}
+          payload=$(jq -n \
+            --arg repo "$REPO" \
+            --arg run_url "$RUN_URL" \
+            --arg commits "$UPSTREAM_COMMITS" \
+            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{embeds: [{
+              title: "⚠️ Fork Sync Conflict Detected",
+              description: "Failed to automatically sync fork with upstream megumiss/NIKKEAutoScript due to merge conflicts.",
+              color: 15158332,
+              fields: [
+                {name: "Repository", value: "[\($repo)](https://github.com/\($repo))", inline: true},
+                {name: "Workflow Run", value: "[View Details](\($run_url))", inline: true},
+                {name: "Action Required", value: "Manual merge required. Please resolve conflicts locally and push to master.", inline: false},
+                {name: "Recent Upstream Commits", value: "```\n\($commits)\n```", inline: false}
+              ],
+              timestamp: $ts
+            }]}')
+          curl --fail-with-body -sS -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL"
