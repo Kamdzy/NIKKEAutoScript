@@ -95,6 +95,13 @@ jobs:
           # was already pushed above by the prior step using GITHUB_TOKEN;
           # only the tag push here needs the elevated credential.
           if [ -n "${KAMDZY_RELEASE_PAT:-}" ]; then
+            # Kamdzy - actions/checkout persists GITHUB_TOKEN as an
+            # `AUTHORIZATION: basic` extraheader, which git sends instead of
+            # the PAT in the URL. v1.1.3-kamdzy.1 was pushed that way and
+            # build.yml never fired. Drop the header so the PAT is used.
+            if git config --local --get-all http.https://github.com/.extraheader >/dev/null; then
+              git config --local --unset-all http.https://github.com/.extraheader
+            fi
             git remote set-url origin \
               "https://x-access-token:${KAMDZY_RELEASE_PAT}@github.com/${GITHUB_REPOSITORY}"
             echo "tag-push credential: KAMDZY_RELEASE_PAT (will trigger build.yml)"
