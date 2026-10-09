@@ -164,7 +164,10 @@ jobs:
           RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
-          UPSTREAM_COMMITS=$(git log HEAD..upstream/master --oneline --no-decorate | head -5)
+          # Kamdzy - `git log -n 5`, not `| head -5`: head exits early, git log
+          # takes SIGPIPE, and under pipefail the step died with exit 141
+          # before curl ran (the 2026-10-09 conflict alert was never sent).
+          UPSTREAM_COMMITS=$(git log -n 5 HEAD..upstream/master --oneline --no-decorate)
           payload=$(jq -n \
             --arg repo "$REPO" \
             --arg run_url "$RUN_URL" \
