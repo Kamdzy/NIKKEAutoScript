@@ -62,8 +62,9 @@
 
     <b>How to use (ParsecVDD, recommended)</b>
     1. Install the official ParsecVDD driver: <a href="https://github.com/nomi-san/parsec-vdd/releases/download/v0.45.1/ParsecVDisplay-v0.45-setup.exe" target="_blank">ParsecVDisplay-v0.45-setup.exe</a>
-    2. Go to NKAS → PC Client → Virtual Display and turn on "Enable VDD Virtual Display" (this turns on Multi-Screen Mode automatically), then set "Virtual Display Type" to ParsecVDD;
-    3. Keep "Auto-Manage VDD Screen" on (the default): when a task starts, the virtual screen is created, corrected to 1080x1920 portrait and its screen number located automatically, and it is closed when the task ends — no need to set the resolution or target screen by hand.
+    2. After installing, right-click the ParsecDisplay icon in the taskbar tray, untick "Options → Run on startup", then click "Exit";
+    3. Go to NKAS → PC Client → Virtual Display and turn on "Enable VDD Virtual Display" (this turns on Multi-Screen Mode automatically), then set "Virtual Display Type" to ParsecVDD;
+    4. Keep "Auto-Manage VDD Screen" on (the default): when a task starts, the virtual screen is created, corrected to 1080x1920 portrait and its screen number located automatically, and it is closed when the task ends — no need to set the resolution or target screen by hand.
 
     <b>MttVDD (legacy option)</b>
     1. Install the official MttVDD driver: <a href="https://github.com/VirtualDrivers/Virtual-Display-Driver/releases/download/25.5.2/Virtual.Display.Driver-v25.05.03-setup-x64.exe" target="_blank">Virtual.Display.Driver-v25.05.03-setup-x64.exe</a>
