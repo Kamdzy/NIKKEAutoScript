@@ -297,6 +297,9 @@ export const staticLabels: Record<string, Record<string, string>> = {
   '近 12 周': { 'en-US': 'Last 12 weeks', 'ja-JP': '直近12週' },
   '近 12 月': { 'en-US': 'Last 12 months', 'ja-JP': '直近12ヶ月' },
   '近 30 天': { 'en-US': 'Last 30 days', 'ja-JP': '直近30日' },
+  // Kamdzy - game-clone progress step from module/tools/game_clone.py, rendered via
+  // t(cloneJob.step); the other steps have labels, this one fell back to raw zh-CN.
+  '正在取消': { 'en-US': 'Cancelling…', 'ja-JP': 'キャンセル中…' },
   // 组件内联文案（事件日历、维护横幅、画面预览、实例管理、更新确认等）的 en/ja 译文
   'Mod': { 'en-US': 'Mod', 'ja-JP': 'Mod' },
   '任务列表': { 'en-US': 'Task list', 'ja-JP': 'タスクリスト' },
