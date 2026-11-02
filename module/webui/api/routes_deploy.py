@@ -110,9 +110,6 @@ FIELD_I18N = {
             'Developer': "「dev」「app」などで新機能を試す",
             'Other': "安定版ブランチ「master」を使用"}},
     },
-    # Kamdzy - PortableGit 2.56.0 (2026-09-28) moved mingw64/ to ucrt64/, so a fresh
-    # install never gets mingw64/bin/git.exe and `git init` fails (broke the
-    # v1.1.3-kamdzy.1 build). cmd/git.exe is the stable launcher in both layouts.
     'GitExecutable': {
         'zh-CN': {'desc': 'git 可执行文件 git.exe 的路径', 'hints': {
             'Easy installer': "使用 './toolkit/Git/cmd/git.exe'",

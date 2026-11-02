@@ -14,11 +14,22 @@
 
     For problems or feature requests, feel free to report them in <a href="https://github.com/megumiss/NIKKEAutoScript/issues" target="_blank">Issues</a>.
 - id: notice_history
-  date: 2026-10-18
+  date: 2026-11-07
   title: Update history
   type: info
   pinned: true
   items:
+    - id: notice_20261107_story2_normal_sweep
+      date: 2026-11-07
+      title: Story2 Normal stage sweep may not work
+      content: |
+        <b>Stage Sweep on this event's Story2 Normal stages may not run correctly</b>
+    - id: notice_20261030
+      date: 2026-10-30
+      title: Volt Dice claiming supported
+      content: |
+        <b>Volt Dice can now be claimed automatically</b>
+        It only claims them; it does not roll the dice for you.
     - id: notice_20261018
       date: 2026-10-18
       title: Body Label Shop added
@@ -154,7 +165,7 @@
 
     <b>How to use (ParsecVDD, recommended)</b>
     1. Install the official ParsecVDD driver: <a href="https://github.com/nomi-san/parsec-vdd/releases/download/v0.45.1/ParsecVDisplay-v0.45-setup.exe" target="_blank">ParsecVDisplay-v0.45-setup.exe</a>
-    2. After installing, right-click the ParsecDisplay icon in the taskbar tray, untick "Options → Run on startup", then click "Exit";
+    2. After installing, right-click the ParsecDisplay icon in the taskbar tray, <b>untick "Options → Run on startup", then click "Exit"</b>;
     3. Go to NKAS → PC Client → Virtual Display and turn on "Enable VDD Virtual Display" (this turns on Multi-Screen Mode automatically), then set "Virtual Display Type" to ParsecVDD;
     4. Keep "Auto-Manage VDD Screen" on (the default): when a task starts, the virtual screen is created, corrected to 1080x1920 portrait and its screen number located automatically, and it is closed when the task ends — no need to set the resolution or target screen by hand.
 
