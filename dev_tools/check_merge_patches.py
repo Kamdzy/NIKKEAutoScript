@@ -11,8 +11,11 @@
 #   python dev_tools/check_merge_patches.py               # in-progress merge: staged index vs upstream/master
 #   python dev_tools/check_merge_patches.py --merge HEAD  # committed merge: REF vs REF^1 (fork) / REF^2 (upstream)
 #
-# An intentional drop (e.g. a fork patch upstream absorbed with different wording) shows as
-# FLAG/missing -- review it, it is the cue to confirm the drop was deliberate. Exits 1 if anything is flagged.
+# Statuses: OK; MOVED (patch code now in another upstream-changed file, e.g. a module split);
+# ABSORBED (upstream made the same change in place, only the stale Kamdzy comment is gone);
+# GONE (upstream deleted the file -- already decided at the modify/delete conflict);
+# FLAG (anything else, e.g. fork code lines missing -- review it, even an intentional drop
+# such as a patch upstream absorbed with different wording). Exits 1 only on FLAG.
 import argparse
 import os
 import subprocess
@@ -75,6 +78,11 @@ def main():
         if f.startswith(tuple(args.skip)):
             continue
         merged_path = up_renamed.get(f, f)
+        if merged_path not in merged_tree:
+            # Upstream deleted a fork-patched file (e.g. an expired event module). git raises a
+            # modify/delete conflict for this, so a human already chose deletion -- report, don't fail.
+            print(f'GONE {f}  (deleted by upstream; fork patch dropped with it)')
+            continue
         f_plus, f_minus = delta(mb, fork, '--', f)
         extra, dropped = delta(*diff_to_merge, '--', merged_path)
         stray, lost = extra - f_plus, dropped - f_minus
@@ -94,7 +102,10 @@ def main():
                     relocated = other
                     break
         ok = not stray and not lost and not missing
-        status = 'OK  ' if ok else 'MOVED' if relocated else 'FLAG'
+        # Every fork code line is present and only fork comments are missing: upstream made the
+        # same change in place and the now-stale Kamdzy comment was removed with it.
+        absorbed = not ok and not stray and not lost and not code
+        status = 'OK  ' if ok else 'MOVED' if relocated else 'ABSORBED' if absorbed else 'FLAG'
         flagged += status == 'FLAG'
         moved = f' -> {merged_path}' if merged_path != f else ''
         print(f"{status} {f}{moved}  "
@@ -106,6 +117,8 @@ def main():
         if relocated:
             print(f'       fork patch now lives in {relocated} (upstream absorbed it); '
                   f'{len(missing - code)} fork comment line(s) dropped with it')
+        elif absorbed:
+            print(f'       upstream made the same change here; {len(missing)} fork comment line(s) dropped')
         else:
             for line in sorted(missing)[:8]:
                 print(f'       missing fork line: {line[:120]}')
