@@ -2,6 +2,44 @@
 # pinned: true announcements are pinned to the top of the client list (several can be pinned at once); within that group the file order still applies (newest first)
 # Minor announcements are no longer listed separately: they move into the items of the "Update history" entry (newest date first), with the body kept as originally announced
 # Kamdzy - translated to English for en-US NKAS fork
+- id: notice_20261105_security_official
+  date: 2026-11-05
+  title: '[PC client security incident: official response]'
+  type: important
+  pinned: true
+  content: |
+    <a href="https://nikke-en.com/newsdetail_m.html?content_id=b4f23938a63a0a4e68aa577af395b1edb172" target="_blank">Original official announcement</a>
+
+    <b>Who is affected (who needs to check)</b>
+    Every Commander who launched the Windows PC client after September 27, 15:41 (UTC+9).
+
+    <b>Required steps (very important)</b>
+    Step 1: Remove the malware from your PC (the client has this built in since November 5, 8:00)
+    1. Before launching the game, fully close every browser (especially Chrome).
+    2. Launch the official PC client; it scans the system automatically.
+    3. If a "malicious program detected" window appears, you must agree to delete the files. (No window means your PC is clean and the game starts normally.)
+    Note: if you don't have the client installed or want to check manually, see the separate official [Manual security check guide].
+
+    Step 2: Protect your accounts and assets (after finishing Step 1, or from another, safe device)
+    1. Change passwords: immediately change the password of every account you used or logged into on the infected PC.
+    2. Reset keys: revoke and regenerate every API key or access token used on the affected PC.
+
+    <b>Reporting losses</b>
+    If you believe your external service accounts or personal assets were lost or affected, contact the official support center in-game right away; they will verify each case and help resolve it.
+
+    <hr>
+
+    <b>Earlier notice</b>
+
+    <b style="color:var(--red)">A supply-chain compromise was found in the NIKKE international (Global) PC client. It may steal browser credentials, developer tokens and wallet data. If you recently used the international PC launcher, stop running the game and launcher immediately and check your PC.</b>
+
+    <b>Check and clean up</b>
+    The tool's menu is in Chinese; the options are numbered.
+    1. Run scripts/windows/Run_NIKKE_Interactive.bat in the NKAS folder and choose "1" (quick IOC scan); choose "2" (full-disk IOC scan, slower) for a whole-disk check.
+    2. If infection is confirmed, first choose "3" (view cleanup plan, read-only) and review it.
+    3. Choose "5" (remove DLL and CLSID, and block the malicious domains) and type CLEAN+BLOCK to confirm. The DLLs are deleted outright with no copy kept; CLSID entries and hosts are backed up first.
+
+    <b style="color:var(--red)">Cleaning up cannot undo data that has already leaked.</b> On a trusted device, change the passwords your browsers saved, sign out of active sessions and rotate developer tokens; for wallets, create a new seed phrase and move your assets to it.
 - id: notice_20260924
   date: 2026-09-24
   title: Star the project on GitHub
