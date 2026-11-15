@@ -123,7 +123,9 @@ class Interception(UI):
             # Kamdzy - fallback: if no boss name shows up after 3s, we're on the overview page - tap LEVEL card
             if enter_level_timer.reached():
                 logger.info('Click %s @ LEVEL_CARD (en-US overview fallback)' % point2str(120, 460))
-                self.device.click_minitouch(120, 460)
+                # Kamdzy - click_xy (not click_minitouch) so upstream's
+                # physical-device control routing applies.
+                self.device.click_xy(120, 460)
                 self.device.sleep(2)
                 enter_level_timer.reset()
                 continue

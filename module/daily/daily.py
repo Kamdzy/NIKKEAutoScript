@@ -212,7 +212,9 @@ class Daily(UI):
             # Kamdzy - Nikke has no gift items available; close dialog and skip
             if not send_done and self.appear(NO_GIFT_ITEMS, offset=(10, 10)):
                 logger.info('No gift items available for this Nikke, skipping')
-                self.device.click_minitouch(655, 180)
+                # Kamdzy - click_xy (not click_minitouch) so upstream's
+                # physical-device control routing applies.
+                self.device.click_xy(655, 180)
                 self.device.sleep(1)
                 return
 
@@ -255,7 +257,9 @@ class Daily(UI):
                     popup_timeout.start()
                 if popup_timeout.reached():
                     logger.info('No R-rank affection coupon found for this Nikke, closing popup and skipping')
-                    self.device.click_minitouch(655, 180)  # X close on gift popup
+                    # Kamdzy - click_xy (not click_minitouch) so upstream's
+                    # physical-device control routing applies.
+                    self.device.click_xy(655, 180)  # X close on gift popup
                     self.device.sleep(1)
                     return
 
