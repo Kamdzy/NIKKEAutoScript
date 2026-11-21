@@ -341,7 +341,7 @@
       },
       "MoveBackend": {
         "type": "select",
-        "value": "driver",
+        "value": "cursor",
         "option": [
           "driver",
           "cursor"
@@ -4082,6 +4082,46 @@
         "type": "interception_stone_charts",
         "value": {},
         "display": "readonly"
+      }
+    },
+    "Storage": {
+      "Storage": {
+        "type": "storage",
+        "value": {},
+        "valuetype": "ignore",
+        "display": "disabled"
+      }
+    }
+  },
+  "AutoMainStory": {
+    "CampaignSettings": {
+      "DebugMode": {
+        "type": "checkbox",
+        "value": false
+      },
+      "MissedEnemyScan": {
+        "type": "checkbox",
+        "value": false
+      }
+    },
+    "Storage": {
+      "Storage": {
+        "type": "storage",
+        "value": {},
+        "valuetype": "ignore",
+        "display": "disabled"
+      }
+    }
+  },
+  "AutoMainCollectible": {
+    "CampaignSettings": {
+      "DebugMode": {
+        "type": "checkbox",
+        "value": false
+      },
+      "MissedEnemyScan": {
+        "type": "checkbox",
+        "value": false
       }
     },
     "Storage": {

@@ -36,7 +36,7 @@ class SoloRaid(SoloRaidChallenge):
             if (
                 click_timer.reached()
                 and self.appear(MAIN_CHECK, offset=10)
-                and self.appear_then_click(SOLO_RAID, offset=10, interval=3, static=False)
+                and self.appear_then_click(SOLO_RAID, offset=10, interval=2, static=False)
             ):
                 logger.info('Enter solo raid')
                 continue
@@ -70,6 +70,7 @@ class SoloRaid(SoloRaidChallenge):
         # see the 开始战斗 branch below.
         team_change_timer = Timer(2, count=3).start()
 
+        challenge = False
         while 1:
             if skip_first_screenshot:
                 skip_first_screenshot = False
@@ -102,7 +103,7 @@ class SoloRaid(SoloRaidChallenge):
             if (
                 self.appear(SOLO_RAID_CHECK, offset=10)
                 and self.appear(CHALLENGE_QUICKLY_DISABLE, threshold=10)
-                and self.appear_then_click(CHALLENGE, threshold=10, interval=2)
+                and self.appear_then_click(CHALLENGE, threshold=10, interval=1)
             ):
                 continue
 
@@ -163,20 +164,27 @@ class SoloRaid(SoloRaidChallenge):
                 while 1:
                     self.device.screenshot()
                     if not self.appear(END_FIGHTING, offset=30):
+                        challenge = True
                         break
                     if self.appear_then_click(END_FIGHTING, offset=30, interval=1):
                         continue
                 continue
 
             # 结算弹窗
-            if self.appear(ENEMY_DEFEATED, offset=200) and self.appear_then_click(
-                ENEMY_DEFEATED_CONFIRM, offset=200, interval=1
-            ):
+            if self.appear(ENEMY_DEFEATED, offset=200) and self.appear(ENEMY_DEFEATED_CONFIRM, offset=200):
+                # 返回单人突击界面
+                while 1:
+                    self.device.screenshot()
+                    if self.appear_then_click(ENEMY_DEFEATED_CONFIRM, offset=200, interval=1):
+                        continue
+                    if self.appear(SOLO_RAID_CHECK, offset=10):
+                        break
                 break
 
             # 扫荡结束
             if (
-                self.appear(SOLO_RAID_CHECK, offset=10)
+                challenge
+                and self.appear(SOLO_RAID_CHECK, offset=10)
                 and self.appear(STAGE_SEVEN, offset=(30, 30))
                 and self.appear(CHALLENGE_QUICKLY_DISABLE, threshold=10)
                 and not self.appear(CHALLENGE, threshold=10)
@@ -191,6 +199,9 @@ class SoloRaid(SoloRaidChallenge):
                 self.device.screenshot()
 
             if self.appear(SOLO_RAID_CHECK, offset=10):
+                if self.appear(STAGE_CHALLENGE, offset=(30, 30)):
+                    self.appear_then_click(STAGE_SEVEN_SWITCH, offset=10, interval=1)
+                    continue
                 break
 
         if self.free_opportunity_remain:

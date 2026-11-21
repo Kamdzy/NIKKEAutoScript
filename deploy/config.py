@@ -26,6 +26,8 @@ class ConfigModel:
     SSLVerify: bool = True
     AutoUpdate: bool = True
 
+    ResourceRepository: str = "https://github.com/megumiss/NIKKEAutoScriptResource.git"
+
     PythonExecutable: str = "./toolkit/python.exe"
     PypiMirror: Optional[str] = None
     InstallDependencies: bool = True
@@ -42,6 +44,8 @@ class ConfigModel:
     EnableReload: bool = True
     CheckUpdateInterval: int = 5
     AutoRestartTime: str = "03:50"
+    UpdateSource: str = 'git'
+    MirrorChyanCDK: Optional[str] = None
     DesktopUpdateManifest: str = (
         "https://nkas.megumiss.top/releases/latest/nkas-desktop.json"
     )

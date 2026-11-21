@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { api } from '../api/client'
+import { api, isExpectedDisconnect } from '../api/client'
 import { t } from '../i18n'
 import router from '../router'
 import type { Instance } from '../types'
@@ -10,6 +10,7 @@ import { useModalStore } from './modal'
 export const useInstancesStore = defineStore('instances', () => {
   const toast = useToastStore()
   const instances = ref<Instance[]>([])
+  const campaignRevisions = ref<Record<string, number>>({})
   // Serial execution state from GET /api/serial/state; null when serial is off
   // or the backend is older than this feature.
   const serialState = ref<any>(null)
@@ -18,7 +19,9 @@ export const useInstancesStore = defineStore('instances', () => {
   function avatarUrl(name?: string) { return name ? `/avatars/${name}` : '' }
 
   async function loadInstances() {
-    try { instances.value = await api.get('/api/instances') } catch (exception: any) { toast.error = exception.message }
+    try { instances.value = await api.get('/api/instances') } catch (exception: any) {
+      if (!isExpectedDisconnect(exception)) toast.error = exception.message
+    }
     await loadSerial()
   }
   async function loadSerial() {
@@ -126,7 +129,7 @@ export const useInstancesStore = defineStore('instances', () => {
   async function importInstance(event: Event) { const file = (event.target as HTMLInputElement).files?.[0]; if (!file) return; try { const response = await fetch('/api/instances/import', { method: 'POST', headers: { 'X-NKAS-Filename': file.name }, body: await file.arrayBuffer() }); const result = await response.json(); if (!response.ok) throw new Error(result.message); await loadInstances() } catch (exception: any) { toast.error = exception.message } }
 
   return {
-    instances, serialState, loadInstances, loadSerial, serialWaiting,
+    instances, campaignRevisions, serialState, loadInstances, loadSerial, serialWaiting,
     stateText, stateClass, displayStatus, displayStatusClass, initials, avatarUrl, runningCount, lifecycle,
     dragIndex, dragOverIndex, onDragStart, onDragOver, onDragEnd, onDrop, saveRemark, importInstance,
   }

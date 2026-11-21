@@ -76,7 +76,7 @@ class GeneratedConfig:
     PCClientInfo_ScreenshotMethod = 'pyautogui'  # pyautogui, mss, PrintWindow
     PCClientInfo_ScreenshotInterval = 0.3
     PCClientInfo_ControlScheme = 'pyautogui'  # pyautogui, postmessage, driver
-    PCClientInfo_MoveBackend = 'driver'  # driver, cursor
+    PCClientInfo_MoveBackend = 'cursor'  # driver, cursor
 
     # Group `Optimization`
     Optimization_AutoRedCircle = False
@@ -248,6 +248,10 @@ class GeneratedConfig:
     Overclock_SkipRatioCheck = False
     Overclock_AlwaysReselect = False
     Overclock_ModifierList = 'ENEMY_WEAPON_UP_3\nENEMY_ARMOR_UP_3\nENEMY_VITALS_UP_3\nNO_RECYCLING\nAGGRESSIVE_TACTICS\nRUSH_HOUR_3\nRELEVANT_PERSONNEL_ONLY'
+
+    # Group `CampaignSettings`
+    CampaignSettings_DebugMode = False
+    CampaignSettings_MissedEnemyScan = False
 
     # Group `AutoTower`
     AutoTower_Enable = True

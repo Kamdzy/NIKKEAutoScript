@@ -1,4 +1,34 @@
 Deploy:
+  Update:
+    # Choose where to download source and launcher updates.
+    # Git uses the configured repository and launcher download URL.
+    # MirrorChyan provides accelerated downloads; requires a valid CDK and the official master branch for source updates.
+    UpdateSource: git
+    # Update source at startup using UpdateSource
+    # [In most cases] Use true
+    AutoUpdate: true
+    # Use auto update and builtin updater feature
+    # This may cause problem https://github.com/LmeSzinc/AzurLaneAutoScript/issues/876
+    EnableReload: true
+    # Check update every X minute
+    # [Disable] 0
+    # [Default] 5
+    CheckUpdateInterval: 5
+    # Scheduled restart time
+    # If there are updates, NKAS will automatically restart and update at this time every day
+    # and run all nkas instances that running before restarted
+    # [Disable] null
+    # [Default] 03:50
+    AutoRestartTime: 03:50
+    # Desktop shell update manifest. The desktop version is independent from the project release tag.
+    # Kamdzy - defaults to the Kamdzy release channel so the launcher pulls the
+    # exe built alongside our source tree; keeps the desktop-shell channel and
+    # the code channel on the same fork instead of mixing Kamdzy source with an
+    # upstream-built shell.
+    # [Default] Use 'https://github.com/Kamdzy/NIKKEAutoScript/releases/latest/download/nkas-desktop.json', built by our build.yml
+    # [Upstream VPS] Use 'https://nkas.megumiss.top/releases/latest/nkas-desktop.json', hosted on the official VPS (faster for CN users, tracks upstream releases)
+    DesktopUpdateManifest: https://github.com/Kamdzy/NIKKEAutoScript/releases/latest/download/nkas-desktop.json
+
   Git:
     # URL of NikkeAutoScript repository
     # Kamdzy - defaults to the Kamdzy fork so a Full-CN 7z downloaded from
@@ -26,9 +56,19 @@ Deploy:
     # [In most cases] Use true
     # [Other] Use false to when connected to an untrusted network
     SSLVerify: true
-    # Update NKAS at startup
-    # [In most cases] Use true
-    AutoUpdate: true
+
+  MirrorChyan:
+    # MirrorChyan CDK (optional). Used when UpdateSource is mirrorchyan; stored privately, never in this YAML.
+    # Clear the CDK on the Deploy page. Get a CDK at https://mirrorchyan.com
+    MirrorChyanCDK: null
+
+  Resource:
+    # URL of the NKAS resource repository (chapter maps and other runtime data)
+    # Synced on demand from the campaign page into ./data/resources; it does not follow NKAS updates
+    # [CN user] Use 'https://git.megumiss.top/megumiss/NIKKEAutoScriptResource' for faster and more stable download
+    # [Gitee] Use 'https://gitee.com/megumiss/NIKKEAutoScriptResource', may require login
+    # [Other] Use 'https://github.com/megumiss/NIKKEAutoScriptResource.git'
+    ResourceRepository: https://git.megumiss.top/megumiss/NIKKEAutoScriptResource
 
   Python:
     # Filepath of python executable `python.exe`
@@ -87,29 +127,6 @@ Deploy:
     # Re-install uiautomator2
     # [In most cases] Use true
     InstallUiautomator2: true
-
-  Update:
-    # Use auto update and builtin updater feature
-    # This may cause problem https://github.com/LmeSzinc/AzurLaneAutoScript/issues/876
-    EnableReload: true
-    # Check update every X minute
-    # [Disable] 0
-    # [Default] 5
-    CheckUpdateInterval: 5
-    # Scheduled restart time
-    # If there are updates, NKAS will automatically restart and update at this time every day
-    # and run all nkas instances that running before restarted
-    # [Disable] null
-    # [Default] 03:50
-    AutoRestartTime: 03:50
-    # Desktop shell update manifest. The desktop version is independent from the project release tag.
-    # Kamdzy - defaults to the Kamdzy release channel so the launcher pulls the
-    # exe built alongside our source tree; keeps the desktop-shell channel and
-    # the code channel on the same fork instead of mixing Kamdzy source with an
-    # upstream-built shell.
-    # [Default] Use 'https://github.com/Kamdzy/NIKKEAutoScript/releases/latest/download/nkas-desktop.json', built by our build.yml
-    # [Upstream VPS] Use 'https://nkas.megumiss.top/releases/latest/nkas-desktop.json', hosted on the official VPS (faster for CN users, tracks upstream releases)
-    DesktopUpdateManifest: https://github.com/Kamdzy/NIKKEAutoScript/releases/latest/download/nkas-desktop.json
 
   Webui:
     # --host. Host to listen

@@ -73,7 +73,7 @@
       "ScreenshotMethod": "pyautogui",
       "ScreenshotInterval": 0.3,
       "ControlScheme": "pyautogui",
-      "MoveBackend": "driver"
+      "MoveBackend": "cursor"
     },
     "PCClient": {
       "Screens": false,
@@ -976,6 +976,24 @@
   "ScreenRotate": {
     "ScreenRotate": {
       "Orientation": 0
+    },
+    "Storage": {
+      "Storage": {}
+    }
+  },
+  "AutoMainStory": {
+    "CampaignSettings": {
+      "DebugMode": false,
+      "MissedEnemyScan": false
+    },
+    "Storage": {
+      "Storage": {}
+    }
+  },
+  "AutoMainCollectible": {
+    "CampaignSettings": {
+      "DebugMode": false,
+      "MissedEnemyScan": false
     },
     "Storage": {
       "Storage": {}

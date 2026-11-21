@@ -2,11 +2,31 @@
 # pinned: true announcements are pinned to the top of the client list (several can be pinned at once); within that group the file order still applies (newest first)
 # Minor announcements are no longer listed separately: they move into the items of the "Update history" entry (newest date first), with the body kept as originally announced
 # Kamdzy - translated to English for en-US NKAS fork
+- id: notice_20261117_mirrorchyan
+  date: 2026-11-17
+  title: MirrorChyan support added
+  type: info
+  content: |
+    <b style="color:var(--red)">On this English (Kamdzy) build, keep UpdateSource set to "Git".</b>
+    <span style="color:var(--red)">MirrorChyan source and launcher updates download the official upstream builds and ignore your configured repository, so switching to MirrorChyan replaces this build's English-client fixes with the original Chinese-focused version.</span>
+
+    <b>NKAS now supports MirrorChyan, which speeds up source and launcher (nkas.exe) updates</b>
+    MirrorChyan is an optional update source; Git is still the default and existing updates are unaffected.
+
+    <b>How to use</b>
+    1. Go to NKAS → Deploy and set UpdateSource to "MirrorChyan";
+    2. Enter a valid CDK in MirrorChyanCDK under the MirrorChyan group;
+    3. Open the Update page to check for and install source or launcher updates.
+    Get a CDK: <a href="https://mirrorchyan.com" target="_blank">MirrorChyan website</a>
+
+    <b>Notes</b>
+    1. Only launcher version 1.2.0 and later supports MirrorChyan updates;
+    2. MirrorChyan source updates only support the official master branch;
+    3. To stop using MirrorChyan, switch UpdateSource back to "Git".
 - id: notice_20261105_security_official
   date: 2026-11-05
   title: '[PC client security incident: official response]'
   type: important
-  pinned: true
   content: |
     <a href="https://nikke-en.com/newsdetail_m.html?content_id=b4f23938a63a0a4e68aa577af395b1edb172" target="_blank">Original official announcement</a>
 
@@ -43,7 +63,7 @@
 - id: notice_20260924
   date: 2026-09-24
   title: Star the project on GitHub
-  type: info
+  type: important
   pinned: true
   content: |
     <b>If NKAS has helped you, please consider giving it a Star on GitHub</b>
@@ -52,11 +72,34 @@
 
     For problems or feature requests, feel free to report them in <a href="https://github.com/megumiss/NIKKEAutoScript/issues" target="_blank">Issues</a>.
 - id: notice_history
-  date: 2026-11-07
+  date: 2026-11-21
   title: Update history
   type: info
   pinned: true
   items:
+    - id: notice_20261121_auto_main_story
+      date: 2026-11-21
+      title: Auto Main Story supported
+      content: |
+        <b>Main story stages can now be cleared automatically</b>
+        Entry: Tools → Auto Main Story.
+        It handles regular enemies, bosses, mechanisms, elevators, story scenes and more.
+
+        <b>Limitations</b>
+        PC client only; the minimum supported resolution is 1080p at 100% scaling.
+        It may throw errors, will miss enemies, and is slow; some chapters have map restrictions.
+        Read "Usage notes — must read" on the task page before using it, and don't use it if these issues bother you.
+    - id: notice_20261118_config_migration
+      date: 2026-11-18
+      title: Config migration added
+      content: |
+        <b>The Multi-instance page has a new "Migrate config" button</b>
+        It migrates configs and persistent data from an old installation.
+    - id: notice_20261107_story2_normal_sweep
+      date: 2026-11-07
+      title: Story2 Normal stage sweep may not work
+      content: |
+        <b>Stage Sweep on this event's Story2 Normal stages may not run correctly</b>
     - id: notice_20261030
       date: 2026-10-30
       title: Volt Dice claiming supported
