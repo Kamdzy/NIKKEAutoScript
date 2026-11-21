@@ -2,13 +2,15 @@
 # and any key without a label for the target language renders as raw Chinese on the en-US
 # client. Labels are collected from every `'key': { 'en-US': ... }` map under webui/src,
 # not just i18n.ts, because some components keep their own local label tables.
+# Keys and the language marker may be single- OR double-quoted: upstream writes newer entries as
+# "key": { 'en-US': "..." }. Matching only '...' made 71 labelled keys look missing (2026-11).
 import argparse
 import pathlib
 import re
 import sys
 
 HAN = re.compile(r'[一-鿿]')
-LABEL = re.compile(r"'((?:[^'\\]|\\.)*)'\s*:\s*\{([^{}]*)\}")
+LABEL = re.compile(r"""(['"])((?:(?!\1)[^\\]|\\.)*)\1\s*:\s*\{([^{}]*)\}""")
 CALL = re.compile(r"""\bt\(\s*(['"])((?:(?!\1)[^\\]|\\.)*)\1""")
 
 
@@ -25,8 +27,8 @@ def main():
     for path in files:
         text = path.read_text(encoding='utf-8')
         for m in LABEL.finditer(text):
-            if f"'{args.lang}'" in m.group(2):
-                labelled.add(m.group(1))
+            if f"'{args.lang}'" in m.group(3) or f'"{args.lang}"' in m.group(3):
+                labelled.add(m.group(2))
         for m in CALL.finditer(text):
             if HAN.search(m.group(2)):
                 used.setdefault(m.group(2), set()).add(path.relative_to(src).as_posix())
