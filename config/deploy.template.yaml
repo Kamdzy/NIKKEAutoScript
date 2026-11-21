@@ -3,6 +3,8 @@ Deploy:
     # Choose where to download source and launcher updates.
     # Git uses the configured repository and launcher download URL.
     # MirrorChyan provides accelerated downloads; requires a valid CDK and the official master branch for source updates.
+    # Kamdzy - On this fork keep 'git'. MirrorChyan source and launcher updates download upstream's official
+    # builds and ignore Repository, which would replace the en-US patches with upstream's code.
     UpdateSource: git
     # Update source at startup using UpdateSource
     # [In most cases] Use true
