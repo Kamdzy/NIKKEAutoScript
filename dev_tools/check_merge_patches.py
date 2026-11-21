@@ -16,14 +16,21 @@
 # GONE (upstream deleted the file -- already decided at the modify/delete conflict);
 # FLAG (anything else, e.g. fork code lines missing -- review it, even an intentional drop
 # such as a patch upstream absorbed with different wording). Exits 1 only on FLAG.
+#
+# Text-level OK can't show behaviour: for code files (not assets tables, not renames) each line
+# also reports how close the nearest upstream change is to a fork hunk, in merge-base lines.
+# NEAR (<= NEAR_LINES) is informational, not a failure -- it is where to read both sides' logic.
 import argparse
 import os
+import re
 import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Rebuilt artifacts / restructured-then-translated files are verified by other means.
 DEFAULT_SKIP = ('webui/dist/', 'config/notices.yaml')
+CODE_SUFFIXES = ('.py', '.vue', '.ts')
+NEAR_LINES = 10
 
 
 def git(*args):
@@ -47,6 +54,25 @@ def delta(*args):
         elif line.startswith('-') and not line.startswith('---'):
             minus.add(line[1:].strip())
     return plus - {''}, minus - {''}
+
+
+HUNK = re.compile(r'^@@ -(\d+)(?:,(\d+))? ')
+
+
+def hunks(base, ref, path):
+    """Changed line ranges of `path` between base and ref, in base's line numbers."""
+    spans = []
+    for line in git('diff', '-U0', base, ref, '--', path).splitlines():
+        m = HUNK.match(line)
+        if m:
+            start, count = int(m.group(1)), int(m.group(2) or 1)
+            spans.append((start, start + max(count, 1) - 1))
+    return spans
+
+
+def nearest(fork_spans, up_spans):
+    """Smallest line distance between any fork hunk and any upstream hunk (0 = overlapping)."""
+    return min((max(0, max(a0, b0) - min(a1, b1)) for a0, a1 in fork_spans for b0, b1 in up_spans), default=None)
 
 
 def main():
@@ -108,8 +134,14 @@ def main():
         status = 'OK  ' if ok else 'MOVED' if relocated else 'ABSORBED' if absorbed else 'FLAG'
         flagged += status == 'FLAG'
         moved = f' -> {merged_path}' if merged_path != f else ''
+        proximity = ''
+        if f.endswith(CODE_SUFFIXES) and not os.path.basename(f).startswith('assets') and merged_path == f:
+            distance = nearest(hunks(mb, fork, f), hunks(mb, upstream, f))
+            if distance is not None:
+                near = 'NEAR -- read both sides; ' if distance <= NEAR_LINES else ''
+                proximity = f'; {near}nearest upstream change {distance} line(s) from a fork hunk'
         print(f"{status} {f}{moved}  "
-              f"(fork +{len(f_plus)}/-{len(f_minus)}, merge-vs-upstream +{len(extra)}/-{len(dropped)})")
+              f"(fork +{len(f_plus)}/-{len(f_minus)}, merge-vs-upstream +{len(extra)}/-{len(dropped)}{proximity})")
         for line in sorted(stray)[:8]:
             print(f'       stray + {line[:120]}')
         for line in sorted(lost)[:8]:
