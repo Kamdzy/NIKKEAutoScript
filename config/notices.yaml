@@ -79,10 +79,10 @@
   items:
     - id: notice_20261121_auto_main_story
       date: 2026-11-21
-      title: Auto Main Story supported
+      title: Auto Campaign supported
       content: |
         <b>Main story stages can now be cleared automatically</b>
-        Entry: Tools → Auto Main Story.
+        Entry: Tools → Auto Campaign.
         It handles regular enemies, bosses, mechanisms, elevators, story scenes and more.
 
         <b>Limitations</b>

@@ -4,6 +4,21 @@ import { computed, ref } from 'vue'
 export const uiLanguage = ref('zh-CN')
 
 export const staticLabels: Record<string, Record<string, string>> = {
+  '修改每日掉落': { 'en-US': 'Edit daily drops', 'ja-JP': '日別ドロップ数の編集' },
+  '保存目录': { 'en-US': 'Save directory', 'ja-JP': '保存先フォルダー' },
+  '打开日历': { 'en-US': 'Open calendar', 'ja-JP': 'カレンダーを開く' },
+  '在日期格内修改掉落总数，可跨月编辑后一次保存。': { 'en-US': 'Edit totals in the calendar. You can edit across months and save all changes at once.', 'ja-JP': '日付のマスで合計を編集し、月をまたいだ変更もまとめて保存できます。' },
+  '待保存天数': { 'en-US': 'Days to save', 'ja-JP': '未保存の日数' },
+  '上个月': { 'en-US': 'Previous month', 'ja-JP': '前の月' },
+  '下个月': { 'en-US': 'Next month', 'ja-JP': '次の月' },
+  '本月': { 'en-US': 'This month', 'ja-JP': '今月' },
+  '无记录': { 'en-US': 'No record', 'ja-JP': '記録なし' },
+  '当天掉落总数': { 'en-US': 'Total drops for the day', 'ja-JP': 'その日の合計' },
+  '已记录总数': { 'en-US': 'Recorded total', 'ja-JP': '記録済みの合計' },
+  '请输入非负整数。': { 'en-US': 'Enter a whole number of zero or more.', 'ja-JP': '0 以上の整数を入力してください。' },
+  '未配置掉落数据文件。': { 'en-US': 'No drop data file is configured.', 'ja-JP': 'ドロップデータファイルが設定されていません。' },
+  '未能读取掉落统计，请刷新页面重试。': { 'en-US': 'Could not load drop statistics. Refresh the page to try again.', 'ja-JP': 'ドロップ統計を読み込めませんでした。ページを再読み込みしてください。' },
+  '暂无掉落记录，可选择日期补录。': { 'en-US': 'No drops recorded yet. Choose a date to add a total.', 'ja-JP': 'ドロップの記録はまだありません。日付を選んで合計を入力できます。' },
   '开发中': { 'en-US': 'Under development', 'ja-JP': '開発中' },
   '自动主线收集品功能正在开发中，暂不开放使用。': { 'en-US': 'Automatic main story collectible collection is under development and is not available yet.', 'ja-JP': 'メインストーリー収集品の自動回収機能は開発中のため、現在は利用できません。' },
   '展开详情': { 'en-US': 'Show details', 'ja-JP': '詳細を表示' },
@@ -43,8 +58,6 @@ export const staticLabels: Record<string, Record<string, string>> = {
   "推图任务启动后显示章节信息。": { 'en-US': "Chapter information appears when the campaign task starts.", 'ja-JP': "キャンペーンタスクの開始後にチャプター情報が表示されます。" },
   "章节地图": { 'en-US': "Chapter map", 'ja-JP': "チャプターマップ" },
   "推图设置": { 'en-US': "Campaign settings", 'ja-JP': "キャンペーン設定" },
-  "自动主线与收集品任务共用的设置。章节地图等数据来自独立的资源仓库，按需同步，不随 NKAS 更新。": { 'en-US': "Settings shared by the main story and collectible tasks. Chapter maps and other data come from a separate resource repository, synced on demand and independent of NKAS updates.", 'ja-JP': "メインストーリーと収集品タスクで共用する設定。チャプターマップなどのデータは独立したリソースリポジトリから必要時に同期され、NKAS の更新には追従しません。" },
-  '根据部署页的更新源，使用 Git 资源仓库或 Mirror酱同步。': { 'en-US': 'Resources sync from the Git repository or MirrorChyan according to the update source on the Deploy page.', 'ja-JP': 'デプロイページの更新ソースに応じて、Git リソースリポジトリまたは MirrorChyan から同期します。' },
   "地图资源": { 'en-US': "Map resources", 'ja-JP': "マップリソース" },
   "同步于": { 'en-US': "synced at", 'ja-JP': "同期日時" },
   "正在检查资源…": { 'en-US': "Checking resources…", 'ja-JP': "リソースを確認中…" },
@@ -419,6 +432,9 @@ export const staticLabels: Record<string, Record<string, string>> = {
   // Kamdzy - game-clone progress step from module/tools/game_clone.py, rendered via
   // t(cloneJob.step); the other steps have labels, this one fell back to raw zh-CN.
   '正在取消': { 'en-US': 'Cancelling…', 'ja-JP': 'キャンセル中…' },
+  // Kamdzy - FieldInterception import placeholder; moved here from the component's former
+  // local label table when it switched to the shared t() (2026-11 merge).
+  '截图目录，例如 D:\\NIKKE\\screenshots': { 'en-US': 'Screenshot directory, e.g. D:\\NIKKE\\screenshots', 'ja-JP': 'スクリーンショットのディレクトリ（例: D:\\NIKKE\\screenshots）' },
   // 组件内联文案（事件日历、维护横幅、画面预览、实例管理、更新确认等）的 en/ja 译文
   'Mod': { 'en-US': 'Mod', 'ja-JP': 'Mod' },
   '任务列表': { 'en-US': 'Task list', 'ja-JP': 'タスクリスト' },

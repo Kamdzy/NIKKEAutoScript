@@ -38,11 +38,8 @@ DISPLAY_DEVICE_MARKER = r'\DISPLAY#PSCCDD0#'
 PARSEC_REGISTRY_PATH = r'SOFTWARE\ParsecDisplay'
 RESTORE_BACKUP_VALUE = 'NKASRestoreDisplaysBackup'
 
-# 目标模式：1080p 竖屏
-TARGET_WIDTH = 1080
-TARGET_HEIGHT = 1920
+# 虚拟屏统一使用 1080p；宽高方向由任务所需的游戏客户区决定
 TARGET_HZ = 60
-TARGET_ORIENTATION = 1  # DMDO_90，竖屏
 
 # 等待 Parsec 显示目标接入当前桌面的超时。驱动恢复快照/首次建屏在部分机器上
 # 耗时较长（实测会超过 15s），取 60s 留足余量，避免误判成建屏失败而中断任务。
@@ -253,10 +250,15 @@ def _wait_app_ready(process, timeout=10):
 
 
 def start_app():
-    """启动常驻进程；接管期间禁用其快照恢复，避免拆分前修改共享桌面的方向。"""
+    """
+    启动常驻进程并返回本次是否持有新进程；接管期间禁用其快照恢复。
+
+    已有进程可枚举时直接接管。若新进程以 0 退出，可能已将请求转交给无法枚举的
+    外部实例，此时恢复快照设置并返回 False，由后续 CLI 建屏验证实例是否可用。
+    """
     if is_app_running():
         logger.info('ParsecDisplay is already running')
-        return
+        return False
     if not os.path.isfile(PARSEC_EXE):
         raise ParsecVddError(f'ParsecDisplay.exe not found: {PARSEC_EXE}')
     logger.info(f'Starting ParsecDisplay: {PARSEC_EXE}')
@@ -268,16 +270,21 @@ def start_app():
     except OSError as e:
         _restore_snapshot_restore()
         raise ParsecVddError(f'Failed to start ParsecDisplay: {e}')
-    if not _wait_app_ready(process):
-        exit_code = process.poll()
-        if exit_code is not None:
-            raise ParsecVddError(
-                f'ParsecDisplay exited before initialization (pid={process.pid}, exit_code={exit_code})'
-            )
+    if _wait_app_ready(process):
+        return True
+    exit_code = process.poll()
+    if exit_code == 0:
+        logger.info('ParsecDisplay exited with code 0; checking for an existing instance through CLI')
+        _restore_snapshot_restore()
+        return False
+    if exit_code is not None:
         raise ParsecVddError(
-            'Timed out waiting for ParsecDisplay to initialize after 10s: '
-            f'process is still running but no window was detected (pid={process.pid})'
+            f'ParsecDisplay exited before initialization (pid={process.pid}, exit_code={exit_code})'
         )
+    raise ParsecVddError(
+        'Timed out waiting for ParsecDisplay to initialize after 10s: '
+        f'process is still running but no window was detected (pid={process.pid})'
+    )
 
 
 def stop_app(timeout=10):
@@ -413,50 +420,50 @@ def _wait_parsec_displays(timeout=WAIT_DISPLAY_TIMEOUT, interval=0.5):
     return []
 
 
-def _set_mode_1080p_portrait(target) -> bool:
+def _set_display_mode(target, resolution) -> bool:
     """
-    确认 Parsec 目标拥有独立桌面后，将其设为 1080x1920@60 竖屏。
+    按任务所需客户区方向，将独立 Parsec 桌面设为 1080p 横屏或竖屏。
 
-    `vdd add` 默认产生 1920x1080@60 横屏，且驱动不提供 1080x1920 的预置模式；
-    但直接按设备名提交 orientation=1 + 宽高互换的模式可以被驱动接受
-    （与 game_control.screen_rotate 的做法一致，这里改成按设备名操作）。
-
-    Returns:
-        bool: 是否已处于目标模式（含无需修改的情况）
+    竖向任务使用 1080x1920、DMDO_90，横向任务使用 1920x1080、DMDO_DEFAULT，
+    刷新率优先 60Hz。Parsec 不提供竖屏预置模式，因此直接提交宽高互换和方向；
+    设置后回读实际模式，不接受驱动返回成功但模式未生效的情况。
     """
     import win32api
     import win32con
 
+    portrait = resolution[0] < resolution[1]
+    width, height = (1080, 1920) if portrait else (1920, 1080)
+    orientation = 1 if portrait else 0
     device_name = _require_extended_display(target)['device']
     dm = win32api.EnumDisplaySettings(device_name, win32con.ENUM_CURRENT_SETTINGS)
     if (dm.PelsWidth, dm.PelsHeight, dm.DisplayOrientation, dm.DisplayFrequency) == (
-        TARGET_WIDTH, TARGET_HEIGHT, TARGET_ORIENTATION, TARGET_HZ
+        width, height, orientation, TARGET_HZ
     ):
-        logger.info(f'Parsec VDD already at {TARGET_WIDTH}x{TARGET_HEIGHT} portrait')
+        logger.info(f'Parsec VDD already at {width}x{height}@{TARGET_HZ} orientation={orientation}')
         return True
 
     logger.info(
-        f'Setting Parsec VDD {device_name} to {TARGET_WIDTH}x{TARGET_HEIGHT}@'
-        f'{TARGET_HZ} portrait (current {dm.PelsWidth}x{dm.PelsHeight} '
+        f'Setting Parsec VDD {device_name} to {width}x{height}@{TARGET_HZ} '
+        f'orientation={orientation} (current {dm.PelsWidth}x{dm.PelsHeight} '
         f'orientation={dm.DisplayOrientation})'
     )
     # 优先按目标刷新率提交，失败则沿用当前刷新率再试一次
     for hz in dict.fromkeys([TARGET_HZ, dm.DisplayFrequency]):
         if _require_extended_display(target)['device'] != device_name:
-            raise ParsecVddError('Parsec display device changed before applying portrait mode')
+            raise ParsecVddError('Parsec display device changed before applying display mode')
         if hz:
             dm.DisplayFrequency = hz
-        dm.PelsWidth, dm.PelsHeight = TARGET_WIDTH, TARGET_HEIGHT
-        dm.DisplayOrientation = TARGET_ORIENTATION
+        dm.PelsWidth, dm.PelsHeight = width, height
+        dm.DisplayOrientation = orientation
         result = win32api.ChangeDisplaySettingsEx(device_name, dm)
         if result == win32con.DISP_CHANGE_SUCCESSFUL:
-            # 回读确认，避免驱动接受请求但未真正生效
             applied = win32api.EnumDisplaySettings(device_name, win32con.ENUM_CURRENT_SETTINGS)
             if (applied.PelsWidth, applied.PelsHeight, applied.DisplayOrientation) == (
-                TARGET_WIDTH, TARGET_HEIGHT, TARGET_ORIENTATION
+                width, height, orientation
             ):
                 logger.info(
-                    f'Parsec VDD mode applied: {applied.PelsWidth}x{applied.PelsHeight}@{applied.DisplayFrequency}Hz'
+                    f'Parsec VDD mode applied: {applied.PelsWidth}x{applied.PelsHeight}@'
+                    f'{applied.DisplayFrequency}Hz orientation={applied.DisplayOrientation}'
                 )
                 return True
             logger.warning(
@@ -466,16 +473,17 @@ def _set_mode_1080p_portrait(target) -> bool:
         else:
             logger.warning(f'ChangeDisplaySettingsEx failed with code {result} (hz={hz})')
 
-    logger.error(f'Failed to set Parsec VDD to {TARGET_WIDTH}x{TARGET_HEIGHT} portrait')
+    logger.error(f'Failed to set Parsec VDD to {width}x{height} orientation={orientation}')
     return False
 
 
-def ensure_screen_1080p_portrait():
+def ensure_screen(resolution=(720, 1280)):
     """
-    确保存在一块独立扩展的 1080x1920@60 Parsec 虚拟屏，并返回其屏幕下标。
+    确保存在适合任务客户区方向的独立 1080p Parsec 虚拟屏，并返回屏幕下标。
 
-    流程：检查驱动 -> 拉起常驻进程（禁用其自行恢复方向）
-    -> 没有屏幕则 add -> 从复制组拆出 -> 校正为 1080p 竖屏 -> 解析屏幕下标。
+    竖向任务设置为 1080x1920@60，横向任务设置为 1920x1080@60。
+    流程：检查驱动 -> 拉起或接管常驻进程 -> 必要时建屏并拆分为扩展桌面
+    -> 校正方向和分辨率 -> 解析屏幕下标。
 
     Returns:
         int: 屏幕在 EnumDisplayMonitors 中的下标
@@ -492,10 +500,7 @@ def ensure_screen_1080p_portrait():
 
     started_here = not is_app_running()
     try:
-        if started_here:
-            start_app()
-        else:
-            logger.info('ParsecDisplay is already running')
+        started_here = start_app()
         displays = [item for item in _active_displays() if _is_parsec(item)]
 
         if not displays:
@@ -503,6 +508,8 @@ def ensure_screen_1080p_portrait():
                 logger.info('No Parsec virtual display, adding one')
                 output = _cli('add')
                 logger.info(f'ParsecDisplay add: {output.strip()}')
+                if not re.search(r'^Added a virtual display with index \d+\.', output, re.MULTILINE):
+                    raise ParsecVddError(f'ParsecDisplay add failed: {output.strip()}')
             displays = _wait_parsec_displays()
             if not displays:
                 raise ParsecVddError('Parsec 虚拟屏未接入当前桌面，请检查驱动及 Windows 显示设置')
@@ -513,8 +520,8 @@ def ensure_screen_1080p_portrait():
             display_config.extend_display(target)
         except OSError as e:
             raise ParsecVddError(f'无法将 Parsec 虚拟屏设为独立扩展桌面，已停止旋转：{e}') from e
-        if not _set_mode_1080p_portrait(target):
-            raise ParsecVddError('Failed to set the independent Parsec display to portrait mode')
+        if not _set_display_mode(target, resolution):
+            raise ParsecVddError('Failed to set the independent Parsec display to the task display mode')
 
         screen_n = find_screen_n(target)
         if screen_n is None:
@@ -528,6 +535,11 @@ def ensure_screen_1080p_portrait():
             except Exception as cleanup_error:
                 logger.warning(f'Failed to clean up ParsecDisplay after enable failed: {cleanup_error}')
         raise
+
+
+def ensure_screen_1080p_portrait():
+    """为手动启用等未指定任务分辨率的调用方保留默认的 1080x1920 竖屏行为。"""
+    return ensure_screen()
 
 
 def auto_stop():

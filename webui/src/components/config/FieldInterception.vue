@@ -1,28 +1,17 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import * as echarts from 'echarts'
+// Kamdzy - upstream now imports the shared t() here but only wraps its new empty-state
+// messages; the fork wraps the remaining Chinese strings (chart legend, import field) with
+// the same t() so en-US stops leaking source text. Labels live in i18n.ts, replacing the
+// fork's former component-local table + language prop. uiLanguage redraws the canvas charts.
+import { t, uiLanguage } from '../../i18n'
 
-const props = defineProps<{ widget: 'interception_stone_import' | 'interception_stone_charts'; data?: any; busy?: boolean; language?: string }>()
+const props = defineProps<{ widget: 'interception_stone_import' | 'interception_stone_charts'; data?: any; busy?: boolean }>()
 const emit = defineEmits<{ import: [path: string]; error: [message: string] }>()
 const importPath = ref('')
 const chartRoot = ref<HTMLElement>()
 let charts: echarts.ECharts[] = []
-
-// Kamdzy - localize hardcoded Chinese so en-US client stops leaking source strings
-const labels: Record<string, Record<string, string>> = {
-  '近 30 天': { 'en-US': 'Last 30 days', 'ja-JP': '直近30日' },
-  '近 12 周': { 'en-US': 'Last 12 weeks', 'ja-JP': '直近12週' },
-  '近 12 月': { 'en-US': 'Last 12 months', 'ja-JP': '直近12ヶ月' },
-  '请输入截图目录。': { 'en-US': 'Please enter a screenshot directory.', 'ja-JP': 'スクリーンショットのディレクトリを入力してください。' },
-  '截图目录，例如 D:\\NIKKE\\screenshots': { 'en-US': 'Screenshot directory, e.g. D:\\NIKKE\\screenshots', 'ja-JP': 'スクリーンショットのディレクトリ（例: D:\\NIKKE\\screenshots）' },
-  '正在导入…': { 'en-US': 'Importing…', 'ja-JP': 'インポート中…' },
-  '导入截图记录': { 'en-US': 'Import screenshot records', 'ja-JP': 'スクリーンショット記録をインポート' },
-  '暂无拦截战掉落记录。': { 'en-US': 'No interception drop records yet.', 'ja-JP': 'インターセプション戦の記録がありません。' },
-}
-function t(source: string) {
-  const language = props.language || 'zh-CN'
-  return language === 'zh-CN' ? source : labels[source]?.[language] || source
-}
 
 function cssVar(name: string, fallback: string) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback }
 
@@ -71,7 +60,7 @@ function submit() {
 }
 
 watch(() => props.data, () => nextTick(drawCharts), { deep: true, immediate: true })
-watch(() => props.language, () => nextTick(drawCharts))
+watch(uiLanguage, () => nextTick(drawCharts))
 onMounted(() => window.addEventListener('resize', onResize))
 onBeforeUnmount(() => { window.removeEventListener('resize', onResize); charts.forEach(chart => chart.dispose()) })
 </script>
@@ -82,7 +71,9 @@ onBeforeUnmount(() => { window.removeEventListener('resize', onResize); charts.f
     <button type="button" class="btn primary sm" :disabled="busy" @click="submit">{{ busy ? t('正在导入…') : t('导入截图记录') }}</button>
   </div>
   <div v-else class="special-field charts-field">
-    <div v-if="!data?.rows?.length" class="special-empty">{{ t('暂无拦截战掉落记录。') }}</div>
+    <div v-if="data && !data.csv_path" class="special-empty">{{ t('未配置掉落数据文件。') }}</div>
+    <div v-else-if="!data" class="special-empty">{{ t('未能读取掉落统计，请刷新页面重试。') }}</div>
+    <div v-else-if="!Object.keys(data.days || {}).length && !data.rows?.length" class="special-empty">{{ t('暂无掉落记录，可选择日期补录。') }}</div>
     <div ref="chartRoot" class="charts-grid"><div></div><div></div><div></div></div>
   </div>
 </template>

@@ -23,12 +23,23 @@ from module.logger import logger
 from module.webui.setting import State
 
 # Runtime state written by the announcement center, not a user setting.
-# StartupNoticeDismissedId lingers in pre-migration user deploy.yaml files.
-EXCLUDED_KEYS = {'ReadNoticeIds', 'StartupNoticeDismissedId'}
+# StartupNoticeDismissedId and ResourceRepository may remain in old deploy.yaml files.
+EXCLUDED_KEYS = {'ReadNoticeIds', 'StartupNoticeDismissedId', 'ResourceRepository'}
 # Path/URL values that benefit from a full-row input instead of the standard
 # narrow control.
 WIDE_KEYS = {'Repository', 'GitExecutable', 'AdbExecutable', 'DesktopUpdateManifest', 'PypiMirror', 'GitProxy',
-             'SerialGroup', 'ConsoleAllowHosts', 'ResourceRepository'}
+             'SerialGroup', 'ConsoleAllowHosts'}
+COMBO_OPTIONS = {
+    'DesktopUpdateManifest': [
+        'https://nkas.megumiss.top/releases/latest/nkas-desktop.json',
+        'https://github.com/megumiss/NIKKEAutoScript/releases/latest/download/nkas-desktop.json',
+    ],
+    'Repository': [
+        'https://git.megumiss.top/megumiss/NIKKEAutoScript',
+        'https://gitee.com/megumiss/NIKKEAutoScript',
+        'https://github.com/megumiss/NIKKEAutoScript',
+    ],
+}
 SELECT_OPTIONS = {
     'UpdateSource': ['git', 'mirrorchyan'],
     'Language': ['zh-CN', 'en-US', 'ja-JP'],
@@ -120,16 +131,6 @@ FIELD_I18N = {
             'CN user': "「https://git.megumiss.top/megumiss/NIKKEAutoScript」を使うと高速で安定",
             'Gitee': "「https://gitee.com/megumiss/NIKKEAutoScript」（ログインが必要な場合あり）",
             'Other': "「https://github.com/megumiss/NIKKEAutoScript」を使用"}},
-    },
-    'ResourceRepository': {
-        'zh-CN': {'desc': '资源仓库地址（章节地图等运行数据）。在推图页面按需同步到 ./data/resources，不随 NKAS 更新', 'hints': {
-            'CN user': "使用 'https://git.megumiss.top/megumiss/NIKKEAutoScriptResource'，下载更快更稳定",
-            'Gitee': "使用 'https://gitee.com/megumiss/NIKKEAutoScriptResource'，可能需要登录",
-            'Other': "使用 'https://github.com/megumiss/NIKKEAutoScriptResource.git'"}},
-        'ja-JP': {'desc': 'リソースリポジトリの URL（チャプターマップなど）。キャンペーン画面から ./data/resources に同期し、NKAS の更新には追従しません', 'hints': {
-            'CN user': "「https://git.megumiss.top/megumiss/NIKKEAutoScriptResource」を使うと高速で安定",
-            'Gitee': "「https://gitee.com/megumiss/NIKKEAutoScriptResource」（ログインが必要な場合あり）",
-            'Other': "「https://github.com/megumiss/NIKKEAutoScriptResource.git」を使用"}},
     },
     'Branch': {
         'zh-CN': {'desc': 'NKAS 分支', 'hints': {
@@ -534,6 +535,9 @@ async def deploy_schema(_: Request):
                 field['default'] = default
                 if field['widget'] == 'select':
                     field['options'] = _select_options(key)
+            if key in COMBO_OPTIONS:
+                field['widget'] = 'combobox'
+                field['options'] = [{'value': value, 'label': value} for value in COMBO_OPTIONS[key]]
             _localize(field)
     return JSONResponse({'groups': groups}, headers={'Cache-Control': 'no-store'})
 
